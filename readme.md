@@ -72,6 +72,7 @@ Tässä vähän ideioita, mitä kaikkea peliin voi rakentaa. Tuskinpa kaikki kui
 * __Loitsuja__
 * __Tarina / kampanja__
 * __Konsoli__: kuka ei muistais Quake pelisarjan kuuluisan konsolin? Pitäisikö tehdä myös ~ napista avautuva terminal konsoli sinunkin peliin? Katso [jQuery Terminal](http://terminal.jcubic.pl/)! 
+* __Äänet__: musiikkia? Googlaa html5 audio ... ;)
 
 ### Erikoiset roguelike ideat
 
