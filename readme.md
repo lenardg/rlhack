@@ -2,7 +2,7 @@
 
 ## Yleiset tiedot
 
-**Hackathon idea: ---harjoitellaan javascriptiä--- tehdään roguelike peli javascript kielellä!**
+**Hackathon idea: ~~harjoitellaan javascriptiä~~ tehdään roguelike peli javascript kielellä!**
 
 Hackathonin aikana kolmen hengen tiimit (toki saa sooloilla) kirjoittavat roguelike pelin. Aikaa noin 7 tuntia tuottaa joku toimiva peli.
 
