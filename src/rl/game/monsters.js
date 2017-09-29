@@ -1,11 +1,14 @@
 
-function Monster(name, symbol, color, minlevel, maxlevel, hp) {
+function Monster(name, symbol, color, minlevel, maxlevel, hp, strength, armor) {
     this.name = name;
     this.symbol = symbol;
     this.color = color;
     this.minlevel = minlevel;
     this.maxlevel = maxlevel;
+    
     this.hp = hp;
+    this.strength = strength;
+    this.armor = armor;
 
     this.location = { x: 39, y: 12 };
 }
