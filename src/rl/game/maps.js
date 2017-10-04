@@ -61,3 +61,7 @@ function MapItem(symbol, color, type, amount) {
     if ( typeof amount === "undefined" ) { amount = 1; } 
 }
 
+var startingLevel = new Map();
+startingLevel.prefill([
+    "####################################################"
+])
