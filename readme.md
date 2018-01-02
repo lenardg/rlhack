@@ -35,7 +35,8 @@ Roguelike kriteereistä korostaisin:
 
 Tässä vaiheessa mittaisin kiinnostusastetta moista hackathonia kohti. Joten kommentit tähän threadiin tai sitten peukut jos kelpaa ja on kiinnostusta.
 
-Suunniteltu ajankohta: 13.1.2018
+Ajankohta: 13.1.2018
+Aloitus: 9.00
 
 ## Getting started
 
@@ -45,7 +46,7 @@ Kloonaa tämä repository tiimille. Jokainen tiimi työskentelee omassa repossa.
 
 Tässä vähän mitä löytyy mistäkin.
 
-* src hakemistosta löytyy barebones skeleton lähdekoodi.
+* src hakemistosta löytyy minimitoteutuksen lähdekoodi.
 * Backendin osalta tein vaan package.jsonin, backend tiimi voi edistää tätä asiaa haluammalla tavallaan eteenpäin.
 * Roguelike osalta latasin valmiiksi rot.js kirjaston ja tein minimaalisen toteutuksen josta voi lähteä liikeelle. 
 
@@ -71,14 +72,17 @@ Dungeons and Dragons tyyppinen peli on yhtä hyvä kuin avaruusaluksen suojelu, 
 
 ### Mitä mahtuu 7 tuntiin?
 
-Aikaa on noin 7 tuntia, ja siihen ei kaikki kuitenkaan mahdu. Ylempänä mainittu repo sisältää yksinkertaisen templatein, jossa on perus-dungeon generointia käytetty ja hahmo voi liikkua ympärilleen. Lisäksi siinä on jotain rakenteita ja dataa idean-antona, mutta ei mitenkään pakollisena tekijänä. Ja toki saa kaiken kirjoittaa alusta loppuun uusiksi.
+Aikaa on noin 7 tuntia, ja siihen ei kaikki kuitenkaan mahdu. Ehdotan että pysytään dungeon crawler teemassa tämän rajallisuuden takia - ja koska rot.js tarjoaa valmiit karttageneraattorit tämmöiselle pelille. Mutta loppupelissä tiimi päättä!
+
+Ylempänä mainittu repo sisältää yksinkertaisen templatein, jossa on perus-dungeon generointia käytetty ja hahmo voi liikkua ympärilleen. Lisäksi siinä on jotain rakenteita ja dataa idean-antona, mutta ei mitenkään pakollisena tekijänä. Ja toki saa kaiken kirjoittaa alusta loppuun uusiksi.
 
 Mitä kaikkea siis voi edistää?
 
 Itse lähestyn _roguelike_ pelin dungeon-crawler mielellä, mutta oikeastaan voitte koodata ihan mitä tahansa peliä, kunhan roguelike kriteerit täyttyvät. Tässä vähän ideioita, mitä kaikkea peliin voi rakentaa. Tuskinpa kaikki kuitenkin ehtii toteuttaa :)
 
-* __Dungeon__: rot.js sisältää dungeon generoinnin, mutta se generoi vain yhden tason, ja onko sitten loppumuoto ok sinulle? Peli voi sisältää monta tasoa, joiden välillä liikutaan käyttäen portaita.
-  * Level generointi uusiksi / kustom level generoindi / kiinteät levelit. Tosiaan aikarajan takia suosittelen kiinteät levelit, ainakin alkuun. Voi myös käytä eri generaattorit jotka ovat sisäänrakennetu rot.js:ään.
+* __Dungeon__: rot.js sisältää dungeon generoinnin, ja tekemäni template generoi vain yhden tason. Peli voi sisältää monta tasoa, joiden välillä liikutaan käyttäen portaita.
+  * Level generointi uusiksi / kustom level generoindi / kiinteät levelit. Tosiaan aikarajan takia suosittelen joko rot.js omaa generaattoria tai kiinteät levelit, ainakin alkuun.
+  * Ei ole näkyvyys toteutettu, eli koko level näkyy heti ensalkuun -- yleensä pelaaja joutuu seikkailemaan ympärille jotta näkisi kaiken
   * Fog of war implementaatio
   * Näkyvyys implementaatio, lampusta/valolähteestä riippuen
   * Magic mapping scroll, jolla saa koko kartan näkyviin
@@ -91,7 +95,7 @@ Itse lähestyn _roguelike_ pelin dungeon-crawler mielellä, mutta oikeastaan voi
 * __Rotut__: 
   * ihmiset
   * kääpiöt
-  * elfit
+  * keijut
   * mitä vielä?
 * __Kokemuspisteet ja tasot__: kun pelihahmot tappaa monstereita, saa he kokemuspisteitä. Kun tarpeeksi pisteitä on saatu, nousee kokemus-taso (experience level), ja hahmosta tulee voimakkaampi, saa hän uusia kykyjä, jne
 * __Monsterit ja taistelu__: Aika perusmateriaali on viholliset roguelike peleissä. Yleensä heitä representoidaan kirjaimilla, on eri kykyisiä ja vahvoja. Heitä vastaan taistellaan (yleensä jos yritetään liikkua suuntaan, jossa on vihollinen, tarkoittaa se hyökkäämistä)
@@ -163,3 +167,10 @@ Peli saa puhua englanttia tai suomea, ihan miten vaan :)
 ## Kysymyksiä?
 
 Lenard vastaa kysymyksiin eventin aikana, sitä ennen, ja sen jälkeen. Voi kysyä teknisiä, peli-teknisiä, ja muuta tapahtumaan liittyviä kysymyksiä.
+
+## Valmistelu
+
+Jos et tiedä miten koodata Javascriptia tai mitä työkaluja käyttäisit, niin tästä vähän eväistä.
+
+Asenna Visual Studio Code (tämä toimii Macissä myös Windowsin lisäksi) ja jonkinlainen git clientti (Git for Windows). 
+
