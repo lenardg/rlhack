@@ -1,6 +1,16 @@
 
 var game = (function(root) {
 
+    var opts = {
+        screenWidth: 100,
+        screenHeight: 28,
+        mapWidth: 80,
+        mapHeight: 25,
+        statusWidth: 20,
+        statusHeight: 28,
+        messagesHeight: 3
+    };
+
     function getWindowSize() {
         return [root.innerWidth, root.innerHeight];
     }
@@ -11,6 +21,7 @@ var game = (function(root) {
     }
 
     function move(mob,dx,dy) {
+        game.currentMap.drawTile( mob.location.x, mob.location.y );
         mob.move(dx, dy);
         game.drawMonster(mob);
     }
@@ -33,6 +44,7 @@ var game = (function(root) {
 
     var game = {
         display: null,
+        currentMap: null,
     
         init: function() {
             function keybinding(key,fn) {
@@ -54,7 +66,10 @@ var game = (function(root) {
             }
 
             // pass in options to the constructor to change the default 80x25 size
-            this.display = new ROT.Display(); 
+            this.display = new ROT.Display({
+                width: opts.screenWidth,
+                height: opts.screenHeight,
+            }); 
 
             // calculate the maximum font size to achieve the desired size (80x25 characters)
             var size = getWindowSize();
@@ -69,7 +84,11 @@ var game = (function(root) {
             keyboard.init();
 
             // show the splashscreen
-            this.splashScreen();
+            //this.splashScreen();
+
+            this.initLevel(1);
+            this.drawMonster(me);
+            
         },
 
         splashScreen: function() {
@@ -85,12 +104,21 @@ var game = (function(root) {
             this.drawMonster(me);
         },
 
+        // this functions generates a new game level (assuming levels starts from 1 upward)
+        // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm
         initLevel: function(level) {
+            var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
+                dugPercentage: 0.4
+            });
+            this.currentMap = new Map(opts.mapWidth, opts.mapHeight, generator);
 
+            this.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
+
+            this.currentMap.show();
         },
 
         drawMonster: function(monster) {
-            this.display.draw(monster.location.x, monster.location.y, monster.symbol, monster.color);
+            this.display.draw(monster.location.x + this.currentMap.left, monster.location.y + this.currentMap.top, monster.symbol, monster.color);
         }
     }
 
