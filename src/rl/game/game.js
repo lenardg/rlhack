@@ -8,7 +8,13 @@ var game = (function(root) {
         mapHeight: 25,
         statusWidth: 20,
         statusHeight: 28,
-        messagesHeight: 3
+        messagesHeight: 3,
+        messagesLeft: 20
+    };
+
+    var gamestate = {
+        me: new Player(),
+        currentMap: {left: 0, top: 0}   
     };
 
     function getWindowSize() {
@@ -21,30 +27,79 @@ var game = (function(root) {
     }
 
     function move(mob,dx,dy) {
-        game.currentMap.drawTile( mob.location.x, mob.location.y );
-        mob.move(dx, dy);
-        game.drawMonster(mob);
+        if ( gamestate.currentMap.isPassable( mob.location.x + dx, mob.location.y + dy)) {
+            gamestate.currentMap.drawTile( mob.location.x, mob.location.y );
+            mob.move(dx, dy);
+            game.drawMonster(mob);
+        }
+    }
+
+    function process_direction(dx,dy) {
+        game.waitCallback(dx,dy);
+        game.mode = 0;
     }
 
     function move_left() {
-        move(me,-1,0);
+        if (game.mode == 1 ) { process_direction(-1, 0); return; } 
+        move(gamestate.me,-1,0);
     }
 
     function move_right() {
-        move(me,1,0);
+        if (game.mode == 1 ) { process_direction(1, 0); return; } 
+        move(gamestate.me,1,0);
     }
 
     function move_up() {
-        move(me,0,-1);
+        if (game.mode == 1 ) { process_direction(0, -1); return; } 
+        move(gamestate.me,0,-1);
     }
 
     function move_down() {
-        move(me,0,1);
+        if (game.mode == 1 ) { process_direction(0, 1); return; } 
+        move(gamestate.me,0,1);
+    }
+
+    function cmd_open() {
+        game.messages.addMessage("Which direction you want to open the door? -");
+        game.waitDirection(function(dx, dy) {
+            var x = gamestate.me.location.x + dx;
+            var y = gamestate.me.location.y + dy;
+            if ( gamestate.currentMap.getTile(x, y) == TILES.ClosedDoor ) {
+                gamestate.currentMap.setTile(x, y, TILES.OpenedDoor);
+                gamestate.currentMap.drawTile(x, y);
+            }
+        });
+    }
+
+    function cmd_close() {
+        game.waitDirection(function(dx, dy) {
+            var x = gamestate.me.location.x + dx;
+            var y = gamestate.me.location.y + dy;
+            if ( gamestate.currentMap.getTile(x, y) == TILES.OpenedDoor ) {
+                gamestate.currentMap.setTile(x, y, TILES.ClosedDoor);
+                gamestate.currentMap.drawTile(x, y);
+            }
+        });        
+    }
+
+    function splash() {
+        game.display.clear();        
+        game.display.drawText(0,0, "we are loading, please stand by ....");
+        game.display.drawText(20,10, "%c{#444444}#%c{#5B0180}          _  _                   _    ");
+        game.display.drawText(20,11, "%c{#444444}#%c{#5B0180}         | || |                 | |   ");
+        game.display.drawText(20,12, "%c{#5B4100}+%c{#5B0180}    _ __ | || |__    __ _   ___ | | __");
+        game.display.drawText(20,13, "%c{#444444}#%c{#5B0180}   | '__|| || '_ \\  / _` | / __|| |/ /");
+        game.display.drawText(20,14, "%c{#444444}#%c{#5B0180}   | |   | || | | || (_| || (__ |   < ");
+        game.display.drawText(20,15, "%c{#444444}#%c{#5B0180}   |_|   |_||_| |_| \\__,_| \\___||_|\\_\\");
+    
+        game.drawMonster(gamestate.me);
     }
 
     var game = {
         display: null,
-        currentMap: null,
+        waitCallback: null,
+        messages: null,
+        mode: 0, // 0: normal game input, 1: direction input
     
         init: function() {
             function keybinding(key,fn) {
@@ -63,6 +118,10 @@ var game = (function(root) {
                 keybinding(ROT.VK_D, move_right);
                 keybinding(ROT.VK_W, move_up);
                 keybinding(ROT.VK_S, move_down);    
+
+                // commands
+                keybinding(ROT.VK_O, cmd_open);
+                keybinding(ROT.VK_C, cmd_close);
             }
 
             // pass in options to the constructor to change the default 80x25 size
@@ -70,6 +129,8 @@ var game = (function(root) {
                 width: opts.screenWidth,
                 height: opts.screenHeight,
             }); 
+
+            this.messages = new Messages(this, 0, opts.messagesLeft, opts.mapWidth, opts.messagesHeight);
 
             // calculate the maximum font size to achieve the desired size (80x25 characters)
             var size = getWindowSize();
@@ -84,25 +145,14 @@ var game = (function(root) {
             keyboard.init();
 
             // show the splashscreen
-            //this.splashScreen();
+            splash()
 
-            this.initLevel(1);
-            this.drawMonster(me);
-            
+            root.setTimeout(function() {
+                game.initLevel(1);
+                game.drawMonster(gamestate.me);
+            }, 1000);
         },
 
-        splashScreen: function() {
-            this.display.clear();        
-            this.display.drawText(0,0, "we are loading, please stand by ....");
-            this.display.drawText(20,10, "%c{#444444}#%c{#5B0180}          _  _                   _    ");
-            this.display.drawText(20,11, "%c{#444444}#%c{#5B0180}         | || |                 | |   ");
-            this.display.drawText(20,12, "%c{#5B4100}+%c{#5B0180}    _ __ | || |__    __ _   ___ | | __");
-            this.display.drawText(20,13, "%c{#444444}#%c{#5B0180}   | '__|| || '_ \\  / _` | / __|| |/ /");
-            this.display.drawText(20,14, "%c{#444444}#%c{#5B0180}   | |   | || | | || (_| || (__ |   < ");
-            this.display.drawText(20,15, "%c{#444444}#%c{#5B0180}   |_|   |_||_| |_| \\__,_| \\___||_|\\_\\");
-
-            this.drawMonster(me);
-        },
 
         // this functions generates a new game level (assuming levels starts from 1 upward)
         // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm
@@ -110,18 +160,29 @@ var game = (function(root) {
             var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
                 dugPercentage: 0.4
             });
-            this.currentMap = new Map(opts.mapWidth, opts.mapHeight, generator);
+            gamestate.currentMap = new Map(opts.mapWidth, opts.mapHeight, generator);
 
-            this.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
+            gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
+            gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
+            gamestate.currentMap.show();
 
-            this.currentMap.show();
+            game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level 1");
+            game.display.drawText(0,2, "%c{#888888}Players stats here");
+
+            this.messages.addMessage("You are entering a dangerous dungeon.");
+            this.messages.addMessage("BTW this is the messages area :)");
+            this.messages.addMessage("Use arrow keys to move, o to open doors (followed by direction)");
         },
 
         drawMonster: function(monster) {
-            this.display.draw(monster.location.x + this.currentMap.left, monster.location.y + this.currentMap.top, monster.symbol, monster.color);
+            this.display.draw(monster.location.x + gamestate.currentMap.left, monster.location.y + gamestate.currentMap.top, monster.symbol, monster.color);
+        },
+
+        waitDirection: function(callback) {
+            this.waitCallback = callback;
+            this.mode = 1;
         }
     }
 
     return game;
 })(window);
-

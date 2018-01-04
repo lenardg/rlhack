@@ -2,7 +2,7 @@
 var TILES = {
     Wall: '#',
     ClosedDoor: '+',
-    OpenedDoor: '/',
+    OpenedDoor: '\'',
     Floor: '.',
     Water: '~',
     StairsUp: '<',
@@ -11,8 +11,17 @@ var TILES = {
 };
 
 var TILE_COLOR = {
-    "#": "#444444",
-    ".": "#666666"
+    "#": "#2E2E2E",
+    ".": "#5F5F5F",
+    "+": "#775500",
+    "\'": "#775500"
+};
+
+var TILE_BLOCKING = {
+    "#": true,
+    ".": false,
+    "+": true,
+    "\'": false
 };
 
 var ITEMS = {
@@ -41,7 +50,26 @@ var Map = (function() {
             this.setTile(x,y,tile);
         }
 
+        function doorcallback(x,y) {
+            this.setTile(x,y,TILES.ClosedDoor);
+        }
+
         generator.create(callback.bind(this));
+
+        var rooms = generator.getRooms();
+        for ( var r = 0; r < rooms.length; ++r ) {
+            var room = rooms[r];
+            if ( r == 0 ) {
+                var left = room.getLeft();
+                var right = room.getRight();
+                var top = room.getTop();
+                var bottom = room.getBottom();
+
+                this.startx = left + Math.round((right - left) * ROT.RNG.getUniform());
+                this.starty = top + Math.round((bottom - top) * ROT.RNG.getUniform());
+            }
+            room.getDoors(doorcallback.bind(this));
+        }
     }
         
     function coord(map,x,y) {
@@ -72,6 +100,7 @@ var Map = (function() {
         },
 
         show: function() {
+            this.display.clear();
             for(var y = 0; y < this.height; ++y ) {
                 for(var x = 0; x < this.width; ++x ) {
                     this.drawTile(x,y);
@@ -86,6 +115,10 @@ var Map = (function() {
                 color = TILE_COLOR[tile];
             }
             this.display.draw(x+this.left,y+this.top,tile,color);            
+        },
+
+        isPassable: function(x,y) {
+            return !TILE_BLOCKING[this.getTile(x,y)];
         }
     });
 

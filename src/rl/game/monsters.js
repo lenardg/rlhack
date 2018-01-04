@@ -17,6 +17,11 @@ extend(Monster.prototype, {
     move: function(dx,dy) {
         this.location.x += dx;
         this.location.y += dy;
+    },
+
+    moveTo: function(x,y) {
+        this.location.x = x;
+        this.location.y = y;
     }
 });
 

@@ -6,3 +6,4 @@ function extend(original, extension) {
         }
     }
 }
+
