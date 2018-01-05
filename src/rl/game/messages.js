@@ -16,8 +16,10 @@ var Messages = (function() {
     }
 
     function clearMessagesUI() {
-        for ( var i = 0; i < this.height; ++i ){
-            this.game.display.drawText(this.left, this.top + i, this.emptyMessage );
+        for ( var y = 0; y < this.height; ++y ){
+            for (var x = 0; x < this.width; ++x ) {
+                this.game.display.draw(x + this.left,y,' ');
+            }
         }
     }
 

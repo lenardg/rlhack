@@ -67,17 +67,24 @@ var game = (function(root) {
             if ( gamestate.currentMap.getTile(x, y) == TILES.ClosedDoor ) {
                 gamestate.currentMap.setTile(x, y, TILES.OpenedDoor);
                 gamestate.currentMap.drawTile(x, y);
+                game.messages.addMessage("Opened.");        
+            } else {
+                game.messages.addMessage("I see no door there to open");        
             }
         });
     }
 
     function cmd_close() {
+        game.messages.addMessage("Which direction you want to close the door? -");
         game.waitDirection(function(dx, dy) {
             var x = gamestate.me.location.x + dx;
             var y = gamestate.me.location.y + dy;
             if ( gamestate.currentMap.getTile(x, y) == TILES.OpenedDoor ) {
                 gamestate.currentMap.setTile(x, y, TILES.ClosedDoor);
                 gamestate.currentMap.drawTile(x, y);
+                game.messages.addMessage("Closed.");        
+            } else {
+                game.messages.addMessage("I see no door there to close");                        
             }
         });        
     }
