@@ -3,11 +3,11 @@ var game = (function(root) {
 
     var opts = {
         screenWidth: 100,
-        screenHeight: 28,
+        screenHeight: 33,
         mapWidth: 80,
-        mapHeight: 25,
+        mapHeight: 30,
         statusWidth: 20,
-        statusHeight: 28,
+        statusHeight: 33,
         messagesHeight: 3,
         messagesLeft: 20
     };
