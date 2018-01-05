@@ -80,11 +80,12 @@ Mitä kaikkea siis voi edistää?
 
 Itse lähestyn _roguelike_ pelin dungeon-crawler mielellä, mutta oikeastaan voitte koodata ihan mitä tahansa peliä, kunhan roguelike kriteerit täyttyvät. Tässä vähän ideioita, mitä kaikkea peliin voi rakentaa. Tuskinpa kaikki kuitenkin ehtii toteuttaa :)
 
-* __Dungeon__: rot.js sisältää dungeon generoinnin, ja tekemäni template generoi vain yhden tason. Peli voi sisältää monta tasoa, joiden välillä liikutaan käyttäen portaita.
-  * Level generointi uusiksi / kustom level generoindi / kiinteät levelit. Tosiaan aikarajan takia suosittelen joko rot.js omaa generaattoria tai kiinteät levelit, ainakin alkuun.
-  * Ei ole näkyvyys toteutettu, eli koko level näkyy heti ensalkuun -- yleensä pelaaja joutuu seikkailemaan ympärille jotta näkisi kaiken
-  * Fog of war implementaatio
-  * Näkyvyys implementaatio, lampusta/valolähteestä riippuen
+* __Dungeon__: rot.js sisältää dungeon generoinnin, ja tekemäni template generoi vain yhden tason. 
+  * Peli voi sisältää monta tasoa, joiden välillä liikutaan käyttäen portaita. Liikkua voi ylös-alas, eli tasot mahdollisesti säilyvät?
+  * Level generointi uusiksi / custom level generoindi / kiinteät levelit. Tosiaan aikarajan takia suosittelen joko rot.js omaa generaattoria tai kiinteät levelit, ainakin alkuun.
+  * Ei ole näkyvyys toteutettu, eli koko level näkyy heti ensalkuun -- yleensä pelaaja joutuu seikkailemaan ympärille jotta näkisi kaiken. Voi siis toteuttaa sen että kartta tulee näkyviin pikku hiljaa
+  * Field of View implementaatio: rot.js voi auttaa FOV laskennassa, jolla pääse siis laskemaan mitä osia dungeonista näkyy. Katso [Field of View computation](http://ondras.github.io/rot.js/manual/#fov)
+  * Valon käyttä. rot.js voi myös valotuksen laskennassa auttaa. [Global lighting](http://ondras.github.io/rot.js/manual/#lighting)
   * Magic mapping scroll, jolla saa koko kartan näkyviin
   * Reveal monsters scroll, jolla saa kaikki levelin monsterit näkymään ainakin hetkeks
 * __Classit__: Peli voi tukea erilaiset hahmoluokat, kuten 
@@ -98,20 +99,24 @@ Itse lähestyn _roguelike_ pelin dungeon-crawler mielellä, mutta oikeastaan voi
   * keijut
   * mitä vielä?
 * __Kokemuspisteet ja tasot__: kun pelihahmot tappaa monstereita, saa he kokemuspisteitä. Kun tarpeeksi pisteitä on saatu, nousee kokemus-taso (experience level), ja hahmosta tulee voimakkaampi, saa hän uusia kykyjä, jne
-* __Monsterit ja taistelu__: Aika perusmateriaali on viholliset roguelike peleissä. Yleensä heitä representoidaan kirjaimilla, on eri kykyisiä ja vahvoja. Heitä vastaan taistellaan (yleensä jos yritetään liikkua suuntaan, jossa on vihollinen, tarkoittaa se hyökkäämistä)
-* __Esineitä ja aarteita__: kultaa tietenkin, ja kaikenlaisia esineitä:
-  * _Aseita_, kuten miekkoja, kirveitäm, jne
+  * Toinen vaihtoehto on toki, että XP:stä voi ostaa uusia kykyjä, jolloin ei ole tasoa, mutta kokemuksen pohjalta hahmo kuitenkin kehittyy?
+* __Monsterit ja taistelu__: Aika perusmateriaali on viholliset roguelike peleissä. Yleensä heitä representoidaan kirjaimilla, on eri kykyisiä ja vahvoja. Heitä vastaan taistellaan (yleensä jos yritetään liikkua suuntaan, jossa on vihollinen, tarkoittaa se hyökkäämistä). Monsterit myös liikkuu, jotkut seuraa pelaaja. Ei kaikki voi ovea avata, mutta jotkut voivat myös sen tehdä.
+* __Esineitä ja aarteita__: kultaa tietenkin, ja kaikenlaisia esineitä voi toteuttaa mitä pelaaja voi löytää. Myös jonkinlainen inventaario-näkymä voi olla hyödyllistä. Ja jos esineitä on eri tarkoituksiin, niin pitäähän sekin tietää mitä niistä käytetään (eli jos sulla on 5 miekkaa mukana, millä niistä taistelet):
+  * _Aseita_, kuten miekkoja, kirveitä, tikareita, jne
   * _Vaatteita_, kuten takkia, hattua
   * _Sormuksia_
   * jne.
-* __Loitsuja__
-* __Ampumaaseita__
+* __Loitsuja__: Loitsut ovat suosittu lisä, mutta mistä ne tulevat?
+  * Loitsut tulee classin kautta, esim jos olet velho, voit niitä heittää
+  * Loitsut voi oppia, kuka tahansa voi niitä oppia
+  * Loitsut käytetään vaan jonkun esineen esim. wandin tai scrollin avulla.
+* __Ampumaaseita__: tai heittoaseita? Miten valitset kohteen?
 * __Kauppoja__: löydettyjä esineitä voi kaupata, tai ostaa uutta ja parempaa jos kullat vaan riittää
 * __Tarina / kampanja__: Joissain peleissä on enemmän tai vähemmän tarinaakin mukana. Onko tarina yksinkertaista, kuin esim: mene alas tasolle 50 ja löydä amuletti? Vai onko se monimutkikkaampi? (toki meidän slotissa kannattaa varmaan tehdä aika simppeli tarina)
 * __Integraatio backendin kanssa__
 * __Konsoli__: kuka ei muistais Quake pelisarjan kuuluisan konsolin? Pitäisikö tehdä myös ~ napista avautuva terminal konsoli sinunkin peliin? Katso [jQuery Terminal](http://terminal.jcubic.pl/)! 
 * __Äänet__: musiikkia? Googlaa html5 audio ... ;)
-* __Load/Save__: roguelike pelejä ei yleensä voi tallentaa erikseen, muuten kuin keskeyttää pelisessio, ja jatkaa samasta kohdasta seuraavalla keralla. Permadeathin tarkoitus korostuu näin, koska yleensä tallennettu peli poistetaan kun kuolema tulee. 
+* __Load/Save__: roguelike pelejä ei yleensä voi tallentaa erikseen. Jos kuitenkin suljet pelin, tallentaa se tilanteen jotta seuraavan kerran voisi jatkaa samasta paikasta. Tämähän sopii myös web sovellukselle! Toki roguelike-it yleensä poisti tämän tallenteen heti kun se ladattiin, tällä lailla tukevat permadeathiä. Tallenne esim poistetaan samalla hetkellä kun hahmo kuolee, ettei pelaaja voi sitä mitenkään ladata uudestaan.  
 
 ### Ohjaus
 

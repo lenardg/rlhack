@@ -175,6 +175,9 @@ var game = (function(root) {
 
             game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level 1");
             game.display.drawText(0,2, "%c{#888888}Players stats here");
+            game.display.drawText(0,opts.statusHeight - 3, "%c{#5B0080}DevisioonΔ");
+            game.display.drawText(0,opts.statusHeight - 2, "%c{#5B0080}roguelike hackathon");
+            game.display.drawText(0,opts.statusHeight - 1, "%c{#5B0080}2018");
 
             this.messages.addMessage("You are entering a dangerous dungeon.");
             this.messages.addMessage("BTW this is the messages area :)");
