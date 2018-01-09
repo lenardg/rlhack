@@ -1,5 +1,19 @@
+///////////////////////////////////////////////////////////////
+//
+// Devisioona rlhack // roguelike hackathon 2018
+// game.js
+//
+// Main game file
+//
+///////////////////////////////////////////////////////////////
 
-var game = (function(root) {
+import { keyboard } from "./keyboard";
+import { extend } from "./util";
+import { Player } from "./player";
+import { Messages } from "./messages";
+import { Map, TILES } from "./maps";
+
+export const game = (function(root) {
 
     var opts = {
         screenWidth: 100,
@@ -110,7 +124,7 @@ var game = (function(root) {
     
         init: function() {
             function keybinding(key,fn) {
-                root.keyboard.map(key,fn.bind(this));
+                keyboard.map(key,fn.bind(this));
             }
 
             function keyconfig() {

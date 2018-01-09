@@ -3,6 +3,14 @@
     "version": "0.1.0",
     "description": "roguelike hackathon, peli",
     "devDependencies": {
-        "local-web-server": "^2.3.0"
+        "local-web-server": "^2.3.0",
+        "babel-loader": "^7.1.2",
+        "webpack": "^3.10.0",
+        "babel-core": "^6.26.0",
+        "babel-preset-env": "^1.6.1"
+    },
+    "scripts": {
+        "webserver": "ws",
+        "build": "webpack"
     }
 }

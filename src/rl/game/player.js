@@ -1,8 +1,10 @@
 
-var Player = (function() {
-    function Player() {
-        this.symbol = '@';
-        this.color = '#FFFFFF';
+import { Monster } from "./monsters";
+
+export class Player extends Monster {
+    constructor() {
+        super("ME", "@", "#FFFFFF", 1, 999, 10, 0, 0 );
+
         this.level = 1;
     
         this.hp = 10;
@@ -12,8 +14,4 @@ var Player = (function() {
         this.location.y = 14;
         this.location.x = 43;
     }
-    
-    Player.prototype = new Monster();
-
-    return Player;
-})();
+}

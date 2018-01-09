@@ -1,5 +1,13 @@
+///////////////////////////////////////////////////////////////
+//
+// Devisioona rlhack // roguelike hackathon 2018
+// maps.js
+//
+// Map generation and handling
+//
+///////////////////////////////////////////////////////////////
 
-var TILES = {
+export const TILES = {
     Wall: '#',
     DeepWall: ' ',
     ClosedDoor: '+',
@@ -11,21 +19,21 @@ var TILES = {
     Grass: '"',
 };
 
-var TILE_COLOR = {
+const TILE_COLOR = {
     "#": "#2E2E2E",
     ".": "#5F5F5F",
     "+": "#775500",
     "\'": "#775500"
 };
 
-var TILE_BLOCKING = {
+const TILE_BLOCKING = {
     "#": true,
     ".": false,
     "+": true,
     "\'": false
 };
 
-var ITEMS = {
+const ITEMS = {
     Gold: '$',
     Scroll: '?',
     Potion: '!',
@@ -36,9 +44,12 @@ var ITEMS = {
     Weapon: '|'
 };
 
-// this class can store maps that you generate
-var Map = (function() {
-    function Map(width, height, generator) {
+function coord(map,x,y) {
+    return y * map.width + x;
+}
+
+export class Map {
+    constructor(width, height, generator) {
         this.width = width;
         this.height = height;
     
@@ -94,71 +105,60 @@ var Map = (function() {
             }
         }
     }
-        
-    function coord(map,x,y) {
-        return y * map.width + x;
+
+    addItem(x, y, item) {
+        this.items[coord(this,x,y)] = item;
+    }
+    
+    setTile(x, y, tiletype) {
+        this.tiles[coord(this,x,y)] = tiletype;
     }
 
-    extend(Map.prototype, {
-        addItem: function(x, y, item) {
-            this.items[coord(this,x,y)] = item;
-        },
-        
-        setTile: function(x, y, tiletype) {
-            this.tiles[coord(this,x,y)] = tiletype;
-        },
+    getTile(x,y) {
+        return this.tiles[coord(this,x,y)];
+    }
 
-        getTile: function(x,y) {
-            return this.tiles[coord(this,x,y)];
-        },
+    getTileWithBoundCheck(x,y) {
+        if ( x < 0 || x >= this.width || y < 0 || y >= this.height ) return TILES.DeepWall;
+        return this.tiles[coord(this,x,y)];
+    }
+ 
+    setVisited(x,y) {
+        this.visited[coord(this,x,y)] = true;
+    }
 
-        getTileWithBoundCheck: function(x,y) {
-            if ( x < 0 || x >= this.width || y < 0 || y >= this.height ) return TILES.DeepWall;
-            return this.tiles[coord(this,x,y)];
-        },
-     
-        setVisited: function(x,y) {
-            this.visited[coord(this,x,y)] = true;
-        },
+    setup(left, top, display) {
+        this.left = left;
+        this.top = top;
+        this.display = display;
+    }
 
-        setup: function(left, top, display) {
-            this.left = left;
-            this.top = top;
-            this.display = display;
-        },
-
-        show: function() {
-            this.display.clear();
-            for(var y = 0; y < this.height; ++y ) {
-                for(var x = 0; x < this.width; ++x ) {
-                    this.drawTile(x,y);
-                }
+    show() {
+        this.display.clear();
+        for(var y = 0; y < this.height; ++y ) {
+            for(var x = 0; x < this.width; ++x ) {
+                this.drawTile(x,y);
             }
-        },
-
-        drawTile: function(x,y) {
-            var tile = this.getTile(x,y);
-            var color = "#FFFFFF"
-            if ( !!TILE_COLOR[tile]) {
-                color = TILE_COLOR[tile];
-            }
-            this.display.draw(x+this.left,y+this.top,tile,color);            
-        },
-
-        isPassable: function(x,y) {
-            return !TILE_BLOCKING[this.getTile(x,y)];
-        },
-
-        isWall: function(x,y) {
-            var t = this.getTileWithBoundCheck(x,y);
-            return t === TILES.Wall || t === TILES.DeepWall;
         }
-    });
+    }
 
-    return Map;
-})();
+    drawTile(x,y) {
+        var tile = this.getTile(x,y);
+        var color = "#FFFFFF"
+        if ( !!TILE_COLOR[tile]) {
+            color = TILE_COLOR[tile];
+        }
+        this.display.draw(x+this.left,y+this.top,tile,color);            
+    }
 
-function MapItem(symbol, color, type, amount) {
-    if ( typeof amount === "undefined" ) { amount = 1; } 
+    isPassable(x,y) {
+        return !TILE_BLOCKING[this.getTile(x,y)];
+    }
+
+    isWall(x,y) {
+        var t = this.getTileWithBoundCheck(x,y);
+        return t === TILES.Wall || t === TILES.DeepWall;
+    }
 }
+
 
