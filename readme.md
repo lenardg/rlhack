@@ -17,8 +17,7 @@ Tavoite on käyttää Javascript kieltä toteutuksessa. Pelin aikaansaaminen kui
 
 Saa myös käyttää Typescript kieltä tai muuta Javascript esikääntäjä, jos tekijä(t) niin haluaa. En kuitenkaan tiedä miten hyvin rot.js toimii näiyden kanssa - asian selvittäminen on tiimien vastuulla!
 
-*rot.js*
-http://ondras.github.io/rot.js/hp/
+### [rot.js](http://ondras.github.io/rot.js/hp/)
 
 Yksi tiimi saa tehdä backendiä (tietenkin myös Javascriptillä, eli Node.JS FTW!), joka kerää pelit yhteen, vastaanottaa statistiikkoja (montako kertaa kyseisessä pelissä on kuoltu), pisteitä ja saavutuksia (_Girho, anoreksinen barbaari kuoli levelillä 34, hänet tappoi myrkyllinen haskell perhonen, hän keräsi 7102 kultaa ja 90823 kokemuspistettä_, tms). 
 
@@ -46,9 +45,21 @@ Kloonaa tämä repository tiimille. Jokainen tiimi työskentelee omassa repossa.
 
 Tässä vähän mitä löytyy mistäkin.
 
-* src hakemistosta löytyy minimitoteutuksen lähdekoodi.
-* Backendin osalta tein vaan package.jsonin, backend tiimi voi edistää tätä asiaa haluammalla tavallaan eteenpäin.
-* Roguelike osalta latasin valmiiksi rot.js kirjaston ja tein minimaalisen toteutuksen josta voi lähteä liikeelle. 
+* `src` hakemistosta löytyy minimitoteutuksen lähdekoodi.
+* Backendin osalta tein vaan `package.json` in, backend tiimi voi edistää tätä asiaa haluammalla tavallaan eteenpäin.
+* Roguelike osalta latasin valmiiksi `rot.js` kirjaston ja tein minimaalisen toteutuksen josta voi lähteä liikeelle. Tämä käyttää EcmaScript 2015 kieltä Babelin avulla.
+  * src\rl hakemistossa ajaa seuraavat komennot:
+    * `npm install` - tämä asentaa dependencyt
+    * `npm run build` - tämä kääntää pelin javascriptit yhteen bundleen ajoa varten
+    * `npm run webserver` - tämä ajaa paikallisen web serverin portilla 8000 josta pääset pelaamaan
+  * Tiedostot:
+    * `game.js` on entrypoint, pelin moottori. Tässä näkyy komennot ja keyboard bindingsit
+    * `maps.js` hoitaa karttoihin liittyvät asiat
+    * `messages.js` on kolme rivisen messages arean käsittelijä pelilaudan yläpuolella
+    * `monsters.js` on monstereiden perustoteutus, mutta tässä rungossa ei siis ole yhtään monsteria
+    * `player.js` on pelaajan liittyvät asiat
+    * `keyboard.js` hoitaa näppäimistön tunnistamista
+    * `util.js` on pieni aputiedosto 
 
 ## roguelike peli
 
@@ -76,23 +87,31 @@ Aikaa on noin 7 tuntia, ja siihen ei kaikki kuitenkaan mahdu. Ehdotan että pysy
 
 Ylempänä mainittu repo sisältää yksinkertaisen templatein, jossa on perus-dungeon generointia käytetty ja hahmo voi liikkua ympärilleen. Lisäksi siinä on jotain rakenteita ja dataa idean-antona, mutta ei mitenkään pakollisena tekijänä. Ja toki saa kaiken kirjoittaa alusta loppuun uusiksi.
 
-Mitä kaikkea siis voi edistää?
+Liikkuminen tapahtuu nuolinäppäimillä tai WASD näppäimillä. Oven saa auki kun painaa 'o' ja suunta, ja kiinni kun painaa 'c' ja suunta. Mutta kartta näkyy kokonaan heti, eikä siinä ole mitään muutakaan mielenkiintoista.
+
+### Mitä kaikkea siis voi edistää?
 
 Itse lähestyn _roguelike_ pelin dungeon-crawler mielellä, mutta oikeastaan voitte koodata ihan mitä tahansa peliä, kunhan roguelike kriteerit täyttyvät. Tässä vähän ideioita, mitä kaikkea peliin voi rakentaa. Tuskinpa kaikki kuitenkin ehtii toteuttaa :)
 
 * __Dungeon__: rot.js sisältää dungeon generoinnin, ja tekemäni template generoi vain yhden tason. 
-  * Peli voi sisältää monta tasoa, joiden välillä liikutaan käyttäen portaita. Liikkua voi ylös-alas, eli tasot mahdollisesti säilyvät?
-  * Level generointi uusiksi / custom level generoindi / kiinteät levelit. Tosiaan aikarajan takia suosittelen joko rot.js omaa generaattoria tai kiinteät levelit, ainakin alkuun.
-  * Ei ole näkyvyys toteutettu, eli koko level näkyy heti ensalkuun -- yleensä pelaaja joutuu seikkailemaan ympärille jotta näkisi kaiken. Voi siis toteuttaa sen että kartta tulee näkyviin pikku hiljaa
+  * Peli voi sisältää monta tasoa, joiden välillä liikutaan käyttäen portaita. Liikkua voi joko vain yhteen suuntaan - aina vaan syvemmälle - tai molempiin. Tasot voivat säilyä tai sitten voi generoida aina uuden kun tulee takaisin ylös. Tasot voi jäädä tyhjäksi jos ne on kerran tyhjennetty, mutta ne voi myös täyttyä uusilla monstereilla, tms. 
+  * Level generointi uusiksi:
+    * Toinen algoritmi rot.js:stä
+    * Custom level generointi
+    * Kiinteät levelit
+    * Sekoitus näistä
+    * Tosiaan aikarajan takia suosittelen joko rot.js omaa generaattoria tai kiinteät levelit, ainakin alkuun.
+  * Ei ole näkyvyys toteutettu, eli koko level näkyy heti ensalkuun -- yleensä pelaaja joutuu seikkailemaan ympärille jotta näkisi kaiken. Voi siis toteuttaa sen että kartta tulee näkyviin pikku hiljaa sen mukaan kun sitä tutkitaan.
   * Field of View implementaatio: rot.js voi auttaa FOV laskennassa, jolla pääse siis laskemaan mitä osia dungeonista näkyy. Katso [Field of View computation](http://ondras.github.io/rot.js/manual/#fov)
-  * Valon käyttä. rot.js voi myös valotuksen laskennassa auttaa. [Global lighting](http://ondras.github.io/rot.js/manual/#lighting)
+  * Valon käyttö. rot.js voi myös valotuksen laskennassa auttaa. [Global lighting](http://ondras.github.io/rot.js/manual/#lighting). Tarviiko pelaaja lampun mukaan? Mitä jos siitä loppuu öljyt? Jos soihdut loppuu?
   * Magic mapping scroll, jolla saa koko kartan näkyviin
   * Reveal monsters scroll, jolla saa kaikki levelin monsterit näkymään ainakin hetkeks
 * __Classit__: Peli voi tukea erilaiset hahmoluokat, kuten 
   * Taistelija
   * Velho
   * Barbaari
-  * jne.
+  * jne.`
+  * Voi olla myös niin, ettei luokkia ole lainkaan, vaan pelaajan pitää oppia / kehittyä ja voi valita suunnan?
 * __Rotut__: 
   * ihmiset
   * kääpiöt
@@ -177,5 +196,6 @@ Lenard vastaa kysymyksiin eventin aikana, sitä ennen, ja sen jälkeen. Voi kysy
 
 Jos et tiedä miten koodata Javascriptia tai mitä työkaluja käyttäisit, niin tästä vähän eväistä.
 
-Asenna Visual Studio Code (tämä toimii Macissä myös Windowsin lisäksi) ja jonkinlainen git clientti (Git for Windows). 
-
+* Tarvitset koodi editorin, kuten esim [Visual Studio Code](https://code.visualstudio.com/). Tämä toimii Macissä myös Windowsin lisäksi
+* Tarvitset [node:n / npm:n](https://nodejs.org/en/) jos haluat hyödyntää template:tia ja jonkinlainen git clientti (Git for Windows). 
+* Tarvitset [git clientin](https://git-scm.com/download/win) tai jopa GUI clientin kuten [SourceTree](https://www.sourcetreeapp.com/) tai [SmartGit](http://www.syntevo.com/smartgit/) 
