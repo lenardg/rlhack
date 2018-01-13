@@ -17,6 +17,7 @@ import { Map, TILES, ITEMS, TutorialMap } from "./maps";
 export const game = (function(root) {
     const backendUrl = "http://rlbackend.azurewebsites.net";
     const musicFiles = ["battle_1.mp3", "cave_2.mp3", "town_ambience_1.mp3"];
+    const deathFile = "intense_atmosphere_1.mp3";
     var activeSong = undefined;
 
     var opts = {
@@ -304,6 +305,13 @@ export const game = (function(root) {
             activeSong.play();
         },
 
+        playDeathSoundtrack: function() {
+            if (activeSong) activeSong.pause();
+            activeSong = new Audio(`music/${deathFile}`);
+            activeSong.currentTime = 85;
+            activeSong.play();
+        },
+
         // this functions generates a new game level (assuming levels starts from 1 upward)
         // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm
         initLevel: function(level) {
@@ -364,6 +372,7 @@ export const game = (function(root) {
         killPlayer(reason) {
             gamestate.dead = true;
             this.showDeathScreen(reason);
+            this.playDeathSoundtrack();
             sendEndGameRequest(reason);
         },
 
