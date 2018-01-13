@@ -118,7 +118,7 @@ export class Map {
     }
 
     getRandomItem() {
-        return Object.values(ITEMS)[Math.round(NUMBER_OF_ITEMS*ROT.RNG.getUniform())];
+        return Object.values(ITEMS)[Math.round(NUMBER_OF_ITEMS*ROT.RNG.getUniform())-1];
     }
 
     getRandomRoom() {
