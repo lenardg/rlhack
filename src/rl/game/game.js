@@ -114,14 +114,12 @@ export const game = (function(root) {
 
     function level_up() {
         if(gamestate.currentMapLevel > 0) {
-            game.initDungeonLevel(gamestate.currentMapLevel-1);
-            game.drawMonster(gamestate.me);
+            game.changeLevel(gamestate.currentMapLevel-1);
         }
     }
 
     function level_down() {
-        game.initDungeonLevel(gamestate.currentMapLevel+1);
-        game.drawMonster(gamestate.me);
+        game.changeLevel(gamestate.currentMapLevel+1);
     }
 
     function splash() {
@@ -231,47 +229,46 @@ export const game = (function(root) {
             splash();
 
             root.setTimeout(function() {
-
-                game.initDungeonLevel(0);
+                game.changeLevel(0);
                 game.status.updateAll();
-                gamestate.music.play("dungeon");
-                game.drawMonster(gamestate.me);
+                gamestate.music.play("town");
             }, 2000);
         },
         initTown: function() {
-            var generator = new ROT.Map.Arena(10,7);
-            gamestate.currentMap = new Map(10,7,generator);
-            gamestate.levels.push(gamestate.currentMap);
-            gamestate.me.moveTo(5,5);
-            gamestate.currentMap.show();
+            var generator = new ROT.Map.Arena(30, 20);
+            var map = new Map(30, 20, generator);
+            map.setup(opts.statusWidth, opts.messagesHeight, this.display);
+            gamestate.levels.push(map);
+            this.loadTown();
+        },
 
+        changeLevel: function(level) {
+            this.display.clear();
+            gamestate.currentMapLevel = level;
+            if (gamestate.levels.length === 0) {
+                this.initTown();
+            } else if (level === 0 ) {
+                this.loadTown();
+            }
+            else if(level >= gamestate.levels.length) {
+                this.initDungeonLevel(level);
+            } else {
+                this.loadDungeonLevel(level);
+            }
+            gamestate.currentMap = gamestate.levels[gamestate.currentMapLevel];
+            gamestate.me.moveTo(gamestate.currentMap.entrance.x, gamestate.currentMap.entrance.y);
+            gamestate.currentMap.show();
+            game.drawMonster(gamestate.me);
+            game.status.updateAll();
+            
+        },
+        
+        loadTown: function() {
             game.display.drawText(0,0, "%c{#FFFFFF}Town");
         },
-        // this functions generates a new game level (assuming levels starts from 1 upward)
-        // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm
-        initDungeonLevel: function(level) {
-            var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
-                dugPercentage: 0.4
-            });
-            gamestate.currentMapLevel = level;
 
-            if(level >= gamestate.levels.length) {
-                //new level
-                gamestate.currentMap = new Map(opts.mapWidth, opts.mapHeight, generator);
-                gamestate.levels.push(gamestate.currentMap);
-            } else {
-                //previously generated level
-                gamestate.currentMap = gamestate.levels[gamestate.currentMapLevel];
-            }
-            
-            gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
-            gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
-            for ( var x = 0; x < 5; ++x ) {    
-                gamestate.currentMap.addItemToRandomRoom();
-            }
-            gamestate.currentMap.show();
-
-            game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level %s".format(level+1));
+        loadDungeonLevel: function(level) {
+            game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level %s".format(level));
             game.display.drawText(0,opts.statusHeight - 3, "%c{#5B0080}DevisioonΔ");
             game.display.drawText(0,opts.statusHeight - 2, "%c{#5B0080}roguelike hackathon");
             game.display.drawText(0,opts.statusHeight - 1, "%c{#5B0080}2018");
@@ -279,6 +276,21 @@ export const game = (function(root) {
             this.messages.addMessage("You are entering a dangerous dungeon.");
             this.messages.addMessage("BTW this is the messages area :)");
             this.messages.addMessage("Use arrow keys to move, o to open doors (followed by direction)");
+        },
+        
+        // this functions generates a new game level (assuming levels starts from 1 upward)
+        // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm
+        initDungeonLevel: function(level) {
+            var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
+                dugPercentage: 0.4
+            });
+            var map = new Map(opts.mapWidth, opts.mapHeight, generator);
+            map.setup(opts.statusWidth, opts.messagesHeight, this.display);
+            for ( var x = 0; x < 5; ++x ) {    
+                map.addItemToRandomRoom();
+            }
+            gamestate.levels.push(map);
+            this.loadDungeonLevel(level);
         },
 
         drawMonster: function(monster) {

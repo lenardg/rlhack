@@ -62,6 +62,8 @@ export class Map {
         this.tiles = [];
         this.items = [];
         this.visited = [];
+        this.entrance = {};
+        this.exit = {};
 
         // called during creation, setup walls and floors
         function callback(x,y,what) {
@@ -74,56 +76,65 @@ export class Map {
             this.setTile(x,y,TILES.ClosedDoor);
         }
 
-        // create dungeon
+       
         generator.create(callback.bind(this));
-
+        //if room is an arena which doesn't have get rooms
+        if(!generator.getRooms) {
+            this.rooms = [new ROT.Map.Feature.Room(1,1,width-2,height-2)];
+        } else {
+            var rooms = generator.getRooms();
+            this.rooms = rooms;
+        }
         // assign starting position and draw all the doors
-        var rooms = generator.getRooms();
-        this.rooms = rooms;
-        for ( var r = 0; r < rooms.length; ++r ) {
-            var room = rooms[r];
-            if ( r == 0 ) {
-                var left = room.getLeft();
-                var right = room.getRight();
-                var top = room.getTop();
-                var bottom = room.getBottom();
-
-                this.startx = left + Math.round((right - left) * ROT.RNG.getUniform());
-                this.starty = top + Math.round((bottom - top) * ROT.RNG.getUniform());
-            }
+        for ( var r = 0; r < this.rooms.length; ++r ) {
+            var room = this.rooms[r];
             room.getDoors(doorcallback.bind(this));
         }
-
         // clear walls that are not adjacent to floors
         for ( var x = 0; x < this.width; ++x ) {
             for ( var y = 0; y < this.height; ++y ) {
                 if ( this.isWall(x,y) ) {
                     if (this.isWall(x-1, y-1) && 
-                         this.isWall(x, y-1) && 
-                         this.isWall(x+1, y-1) && 
-                         this.isWall(x-1, y) && 
-                         this.isWall(x+1, y) && 
-                         this.isWall(x-1, y+1) && 
-                         this.isWall(x, y+1) && 
-                         this.isWall(x+1, y+1)) {
+                        this.isWall(x, y-1) && 
+                        this.isWall(x+1, y-1) && 
+                        this.isWall(x-1, y) && 
+                        this.isWall(x+1, y) && 
+                        this.isWall(x-1, y+1) && 
+                        this.isWall(x, y+1) && 
+                        this.isWall(x+1, y+1)) {
                         this.setTile(x,y,TILES.DeepWall);
                     }
                 }
             }
         }
-    }
+        this.entrance = this.getRandomLocation();
+        do {
+            this.exit = this.getRandomLocation();
+        } while (this.exit === this.entrance);
 
+        if(generator.getRooms) {
+            this.setTile(this.entrance.x,this.entrance.y,TILES.StairsUp);
+        }
+        this.setTile(this.exit.y,this.exit.y,TILES.StairsDown);
+    }
+    getRandomLocation() {
+        var location = {};
+        var room = this.getRandomRoom();
+        location.x = this.getRandomXcoordInRoom(room);
+        location.y = this.getRandomYcoordInRoom(room);
+        return location;
+    }
     addItemToRandomRoom() {
         this.addItemToRandomPositionInRoom(this.getRandomRoom(), this.getRandomItem());
     }
 
     getRandomItem() {
-        return Object.values(ITEMS)[Math.round(NUMBER_OF_ITEMS*ROT.RNG.getUniform())-1];
+        return Object.values(ITEMS)[Math.floor(NUMBER_OF_ITEMS*ROT.RNG.getUniform())];
     }
 
     getRandomRoom() {
         var rooms = this.rooms;
-        var roomNumber = Math.round(ROT.RNG.getUniform()*rooms.length-1);
+        var roomNumber = Math.floor(ROT.RNG.getUniform()*rooms.length);
         return rooms[roomNumber];
     }
 
@@ -185,7 +196,6 @@ export class Map {
     }
 
     show() {
-        this.display.clear();
         for(var y = 0; y < this.height; ++y ) {
             for(var x = 0; x < this.width; ++x ) {
                 this.drawTile(x,y);
