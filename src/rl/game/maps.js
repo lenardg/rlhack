@@ -79,6 +79,10 @@ class RootMap {
     addItem(x, y, item) {
         this.items[coord(this,x,y)] = item;
     }
+
+    addTile(x, y, tile) {
+        this.tiles[coord(this,x,y)] = tile;
+    }
     
     setTile(x, y, tiletype) {
         this.tiles[coord(this,x,y)] = tiletype;
@@ -141,6 +145,14 @@ class RootMap {
 
     isPassable(x,y) {
         return !TILE_BLOCKING[this.getTile(x,y)];
+    }
+
+    isFreeTile(x,y) {
+        const tile = this.getTile(x,y);
+        return !TILE_BLOCKING[tile] &&
+            this.items[coord(this,x,y)] == null &&
+            tile != TILES.Teleport &&
+            tile != TILES.Well;
     }
 
     getAction(x, y) {
