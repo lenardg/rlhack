@@ -50,6 +50,9 @@ export const game = (function(root) {
             gamestate.currentMap.drawTile( mob.location.x, mob.location.y );
             mob.move(dx, dy);
             game.drawMonster(mob);
+            if (mob.isPlayer()) {
+                if (gamestate.currentMap.)
+            }
         }
     }
 
