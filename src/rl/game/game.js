@@ -11,6 +11,7 @@ import { keyboard } from "./keyboard";
 import { extend } from "./util";
 import { Player } from "./player";
 import { Messages } from "./messages";
+import { StatusPanel } from "./status";
 import { Map, TILES, ITEMS } from "./maps";
 import { MusicController } from "./music";
 
@@ -148,6 +149,7 @@ export const game = (function(root) {
         display: null,
         waitCallback: null,
         messages: null,
+        status: null,
         mode: 0, // 0: normal game input, 1: direction input
     
         init: function() {
@@ -185,6 +187,10 @@ export const game = (function(root) {
             }); 
 
             this.messages = new Messages(this, 0, opts.messagesLeft, opts.mapWidth, opts.messagesHeight);
+            this.status = new StatusPanel(gamestate.me, this.display, 0, 3, opts.statusWidth, opts.statusHeight);
+            gamestate.me.onUpdated(() => {
+                this.status.updateAll();
+            });
 
             // calculate the maximum font size to achieve the desired size (80x25 characters)
             var size = getWindowSize();
@@ -203,9 +209,10 @@ export const game = (function(root) {
 
             root.setTimeout(function() {
                 game.initLevel(0);
+                game.status.updateAll();
                 gamestate.music.play("dungeon");
                 game.drawMonster(gamestate.me);
-            }, 5000);
+            }, 2000);
         },
 
 
@@ -225,7 +232,6 @@ export const game = (function(root) {
                 //previously generated level
                 gamestate.currentMap = gamestate.levels[gamestate.currentMapLevel];
             }
-
             
             gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
             gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
@@ -235,7 +241,6 @@ export const game = (function(root) {
             gamestate.currentMap.show();
 
             game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level %s".format(level+1));
-            game.display.drawText(0,2, "%c{#888888}Players stats here");
             game.display.drawText(0,opts.statusHeight - 3, "%c{#5B0080}DevisioonΔ");
             game.display.drawText(0,opts.statusHeight - 2, "%c{#5B0080}roguelike hackathon");
             game.display.drawText(0,opts.statusHeight - 1, "%c{#5B0080}2018");
