@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////////
 
 import { keyboard } from "./keyboard";
-import { extend, each } from "./util";
+import { extend, each, compareLocation } from "./util";
 import { Player } from "./player";
 import { Messages } from "./messages";
 import { StatusPanel } from "./status";
@@ -47,7 +47,7 @@ export const game = (function(root) {
         this.display.setOptions({fontSize: this.display.computeFontSize(size[0], size[1])});        
     }
 
-    function move(mob,dx,dy) {
+    function move(mob,dx,dy,isPlayer) {
         if ( gamestate.currentMap.isPassable( mob.location.x + dx, mob.location.y + dy)) {
             gamestate.currentMap.drawTile( mob.location.x, mob.location.y, true );
             mob.move(dx, dy);
@@ -63,6 +63,21 @@ export const game = (function(root) {
                         game.messages.addMessage("You picked up a " + generatedItem.name);
                     }
                 }
+            }
+        } else if ( !!isPlayer && gamestate.currentMap.hasMonster (mob.location.x + dx, mob.location.y + dy)) {
+            let monster = gamestate.currentMap.hasMonster (mob.location.x + dx, mob.location.y + dy);
+            let dmg = gamestate.me.attack(monster);
+            if ( dmg > 0 ) {
+                game.messages.addMessage(`You hit the ${monster.name}!`);
+                let res = monster.takeDamage(dmg);
+                if ( !res ) {
+                    game.messages.addMessage(`You have killed the ${monster.name}!`);
+                    gamestate.me.takeExperience(gamestate.currentMapLevel);
+                    gamestate.currentMap.killMonster(monster);
+                }
+            }
+            else {
+                game.messages.addMessage(`You miss the ${monster.name}!`);
             }
         }
     }
@@ -100,7 +115,20 @@ export const game = (function(root) {
                 if ( !second ) {
                     if ( x == gamestate.me.location.x && y == gamestate.me.location.y ) {
                         // attach player
-                        game.messages.addMessage(`The ${mob.name} attacks you`);
+                        var dmg = mob.attack(gamestate.me);
+                        if ( !dmg ) {
+                            game.messages.addMessage(`The ${mob.name} tries to hit you but misses!`);
+                        } else {
+                            var result = gamestate.me.takeDamage(dmg);
+                            if ( result ) {
+                                game.messages.addMessage(`The ${mob.name} hits you!`);
+                            }
+                            else {
+                                endgame();
+                                game.messages.addMessage(`The ${mob.name} hits you and you DIE!`);
+                                game.messages.addMessage(`Press ESCAPE to start over!!`);
+                            }
+                        }
                     }
                     else {
                         // move toward player
@@ -119,38 +147,42 @@ export const game = (function(root) {
     }
 
     function move_left() {
-        if (game.mode == 1 ) { 
+        if ( game.mode == 2 ) return;
+        if ( game.mode == 1 ) { 
             process_direction(-1, 0); 
         } else { 
-            move(gamestate.me,-1,0);
+            move(gamestate.me,-1,0,true);
         }
         process_world();        
     }
 
     function move_right() {
-        if (game.mode == 1 ) { 
+        if ( game.mode == 2 ) return;
+        if ( game.mode == 1 ) { 
             process_direction(1, 0); 
         } else {
-            move(gamestate.me,1,0);
+            move(gamestate.me,1,0, true);
         }
         process_world();
     }
 
     function move_up() {
-        if (game.mode == 1 ) { 
+        if ( game.mode == 2 ) return;
+        if ( game.mode == 1 ) { 
             process_direction(0, -1); 
         } 
         else {
-            move(gamestate.me,0,-1);
+            move(gamestate.me,0,-1, true);
         }
         process_world();
     }
 
     function move_down() {
-        if (game.mode == 1 ) { 
+        if ( game.mode == 2 ) return;
+        if ( game.mode == 1 ) { 
             process_direction(0, 1); 
         } else { 
-            move(gamestate.me,0,1);
+            move(gamestate.me,0,1, true);
         }
         process_world();
     }
@@ -160,11 +192,14 @@ export const game = (function(root) {
     }
 
     function cmd_rest() {
+        if ( game.mode == 2 ) return;
         // do nothing
         process_world();
     }
 
     function cmd_open() {
+        if ( game.mode == 2 ) return;
+
         game.messages.addMessage("Which direction you want to open the door? -");
         game.waitDirection(function(dx, dy) {
             var x = gamestate.me.location.x + dx;
@@ -180,6 +215,8 @@ export const game = (function(root) {
     }
 
     function cmd_close() {
+        if ( game.mode == 2 ) return;
+
         game.messages.addMessage("Which direction you want to close the door? -");
         game.waitDirection(function(dx, dy) {
             var x = gamestate.me.location.x + dx;
@@ -194,6 +231,23 @@ export const game = (function(root) {
         });        
     }
 
+    function cmd_restart() {
+        if ( game.mode != 2 ) return;
+
+        game.mode = 0;
+
+        gamestate.me = new Player();
+        gamestate.currentMap =  {left: 0, top: 0};
+        gamestate.currentMapLevel = 0;
+        gamestate.levels = [];
+    
+        game.changeLevel(0);
+        game.status.updateAll();
+        gamestate.music.play("dungeon");
+        game.drawMonster(gamestate.me);
+
+    }
+
     function level_up() {
         if(gamestate.currentMapLevel > 0) {
             game.initDungeonLevel(gamestate.currentMapLevel-1);
@@ -204,6 +258,31 @@ export const game = (function(root) {
     function level_down() {
         game.initDungeonLevel(gamestate.currentMapLevel+1);
         game.drawMonster(gamestate.me);
+    }
+
+    function endgame() {
+        game.display.clear();
+
+        game.display.drawText(20,8,  "%c{#FF0000}▓██   ██▓ ▒█████   █    ██    ▓█████▄  ██▓▓█████ ▓█████▄ ");        
+        game.display.drawText(20,9,  "%c{#FF0000} ▒██  ██▒▒██▒  ██▒ ██  ▓██▒   ▒██▀ ██▌▓██▒▓█   ▀ ▒██▀ ██▌");        
+        game.display.drawText(20,10, "%c{#FF0000}  ▒██ ██░▒██░  ██▒▓██  ▒██░   ░██   █▌▒██▒▒███   ░██   █▌");        
+        game.display.drawText(20,11, "%c{#FF0000}  ░ ▐██▓░▒██   ██░▓▓█  ░██░   ░▓█▄   ▌░██░▒▓█  ▄ ░▓█▄   ▌");        
+        game.display.drawText(20,12, "%c{#FF0000}  ░ ██▒▓░░ ████▓▒░▒▒█████▓    ░▒████▓ ░██░░▒████▒░▒████▓ ");        
+        game.display.drawText(20,13, "%c{#FF0000}   ██▒▒▒ ░ ▒░▒░▒░ ░▒▓▒ ▒ ▒     ▒▒▓  ▒ ░▓  ░░ ▒░ ░ ▒▒▓  ▒ ");        
+        game.display.drawText(20,14, "%c{#FF0000} ▓██ ░▒░   ░ ▒ ▒░ ░░▒░ ░ ░     ░ ▒  ▒  ▒ ░ ░ ░  ░ ░ ▒  ▒ ");        
+        game.display.drawText(20,15, "%c{#FF0000} ▒ ▒ ░░  ░ ░ ░ ▒   ░░░ ░ ░     ░ ░  ░  ▒ ░   ░    ░ ░  ░ ");        
+        game.display.drawText(20,16, "%c{#FF0000} ░ ░         ░ ░     ░           ░     ░     ░  ░   ░    ");        
+        game.display.drawText(20,17, "%c{#FF0000} ░ ░                           ░                  ░      ");        
+
+        game.mode = 2;
+    }
+
+    function use_stairs() {
+        if(compareLocation(gamestate.me.location,gamestate.currentMap.entrance)) {
+            game.changeLevel(gamestate.currentMapLevel-1);
+        } else if (compareLocation(gamestate.me.location,gamestate.currentMap.exit)) {
+            game.changeLevel(gamestate.currentMapLevel+1);
+        }
     }
 
     function splash() {
@@ -279,12 +358,13 @@ export const game = (function(root) {
                 keybinding(ROT.VK_O, cmd_open);
                 keybinding(ROT.VK_C, cmd_close);
 
-                keybinding(ROT.VK_U, level_up);
-                keybinding(ROT.VK_J, level_down);
+                keybinding(ROT.VK_U, use_stairs);
                 
                 keybinding(ROT.VK_M, cmd_toggleMusic);
 
                 keybinding(ROT.VK_R, cmd_rest);
+
+                keybinding(ROT.VK_ESCAPE, cmd_restart);
             }
 
             // pass in options to the constructor to change the default 80x25 size
@@ -315,50 +395,45 @@ export const game = (function(root) {
             splash();
 
             root.setTimeout(function() {
-
-                game.initDungeonLevel(0);
+                game.changeLevel(0);
                 game.status.updateAll();
-                gamestate.music.play("dungeon");
-                game.drawMonster(gamestate.me);
+                gamestate.music.play("town");
             }, 2000);
         },
         initTown: function() {
-            var generator = new ROT.Map.Arena(10,7);
-            gamestate.currentMap = new Map(10,7,generator);
-            gamestate.levels.push(gamestate.currentMap);
-            gamestate.me.moveTo(5,5);
-            gamestate.currentMap.show();
-
-            game.display.drawText(0,0, "%c{#FFFFFF}Town");
+            var generator = new ROT.Map.Arena(30, 20);
+            var map = new Map(30, 20, generator);
+            gamestate.levels.push(map);
+            this.loadTown();
         },
-        // this functions generates a new game level (assuming levels starts from 1 upward)
-        // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm
-        initDungeonLevel: function(level) {
-            var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
-                dugPercentage: 0.4
-            });
-            gamestate.currentMapLevel = level;
 
-            if(level >= gamestate.levels.length) {
-                //new level
-                gamestate.currentMap = new Map(opts.mapWidth, opts.mapHeight, generator);
-                gamestate.currentMap.setDungeonLevel(level);
-                gamestate.currentMap.addMonsters();
-                gamestate.levels.push(gamestate.currentMap);
+        changeLevel: function(level) {
+            this.display.clear();
+            gamestate.currentMapLevel = level;
+            if (gamestate.levels.length === 0) {
+                this.initTown();
+            } else if (level === 0 ) {
+                this.loadTown();
+            } else if(level >= gamestate.levels.length) {
+                this.initDungeonLevel(level);
             } else {
-                //previously generated level
-                gamestate.currentMap = gamestate.levels[gamestate.currentMapLevel];
+                this.loadDungeonLevel(level);
             }
-            
+            gamestate.currentMap = gamestate.levels[gamestate.currentMapLevel];
+            gamestate.me.moveTo(gamestate.currentMap.entrance.x, gamestate.currentMap.entrance.y);
             gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display, gamestate.me);
-            gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
-            for ( var x = 0; x < 5; ++x ) {    
-                gamestate.currentMap.addItemToRandomRoom();
-            }
             gamestate.currentMap.show();
+            game.drawMonster(gamestate.me);
             game.status.updateAll();
             
-            game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level %s".format(level+1));
+        },
+        
+        loadTown: function() {
+            game.display.drawText(0,0, "%c{#FFFFFF}Town");
+        },
+
+        loadDungeonLevel: function(level) {
+            game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level %s".format(level));
             game.display.drawText(0,opts.statusHeight - 3, "%c{#5B0080}DevisioonΔ");
             game.display.drawText(0,opts.statusHeight - 2, "%c{#5B0080}roguelike hackathon");
             game.display.drawText(0,opts.statusHeight - 1, "%c{#5B0080}2018");
@@ -366,6 +441,22 @@ export const game = (function(root) {
             this.messages.addMessage("You are entering a dangerous dungeon.");
             this.messages.addMessage("BTW this is the messages area :)");
             this.messages.addMessage("Use arrow keys to move, o to open doors (followed by direction)");
+        },
+        
+        // this functions generates a new game level (assuming levels starts from 1 upward)
+        // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm
+        initDungeonLevel: function(level) {
+            var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
+                dugPercentage: 0.4
+            });
+            var map = new Map(opts.mapWidth, opts.mapHeight, generator);
+            for ( var x = 0; x < 5; ++x ) {    
+                map.addItemToRandomRoom();
+            }
+            map.setDungeonLevel(level);
+            map.addMonsters();
+            gamestate.levels.push(map);
+            this.loadDungeonLevel(level);
         },
 
         drawMonster: function(monster) {
