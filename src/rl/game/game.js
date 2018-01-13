@@ -11,8 +11,8 @@ import { keyboard } from "./keyboard";
 import { extend } from "./util";
 import { Player } from "./player";
 import { Messages } from "./messages";
-import { Map, TILES } from "./maps";
 import { Inventory } from "./inventory";
+import { Map, TILES, TutorialMap } from "./maps";
 
 export const game = (function(root) {
 
@@ -29,7 +29,8 @@ export const game = (function(root) {
 
     var gamestate = {
         me: new Player(),
-        currentMap: {left: 0, top: 0}
+        currentMap: {left: 0, top: 0},
+        level: 0,
     };
 
     function getWindowSize() {
@@ -182,7 +183,7 @@ export const game = (function(root) {
             gamestate.inventory = new Inventory(this.display);
 
             root.setTimeout(function() {
-                game.initLevel(1);
+                game.initLevel(gamestate.level);
                 game.drawMonster(gamestate.me);
             }, 1000);
         },
@@ -191,14 +192,26 @@ export const game = (function(root) {
         // this functions generates a new game level (assuming levels starts from 1 upward)
         // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm
         initLevel: function(level) {
-            var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
-                dugPercentage: 0.4
-            });
-            gamestate.currentMap = new Map(opts.mapWidth, opts.mapHeight, generator);
+            if (level === 0) {
+                gamestate.currentMap = new TutorialMap(
+                    opts.mapWidth,
+                    opts.mapHeight);
+                gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
+                gamestate.currentMap.drawMap();
+            } else {
+                var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
+                    dugPercentage: 0.4
+                });
+                gamestate.currentMap = new Map(
+                    opts.mapWidth,
+                    opts.mapHeight,
+                    generator);
+                
+                gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
+                gamestate.currentMap.show();
+            }
 
-            gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
             gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
-            gamestate.currentMap.show();
 
             game.display.drawText(0,0, `%c{#FFFFFF}Dungeon, level ${level}`);
             game.display.drawText(0,2, "%c{#888888}Players stats here");

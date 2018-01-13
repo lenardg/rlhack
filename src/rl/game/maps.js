@@ -48,14 +48,89 @@ function coord(map,x,y) {
     return y * map.width + x;
 }
 
-export class Map {
-    constructor(width, height, generator) {
-        this.width = width;
-        this.height = height;
-    
+class RootMap {
+    constructor() {
         this.tiles = [];
         this.items = [];
         this.visited = [];
+    }
+
+    addItem(x, y, item) {
+        this.items[coord(this,x,y)] = item;
+    }
+    
+    setTile(x, y, tiletype) {
+        this.tiles[coord(this,x,y)] = tiletype;
+    }
+
+    getTile(x,y) {
+        return this.tiles[coord(this,x,y)];
+    }
+
+    getTileWithBoundCheck(x,y) {
+        if ( x < 0 || x >= this.width || y < 0 || y >= this.height ) return TILES.DeepWall;
+        return this.tiles[coord(this,x,y)];
+    }
+ 
+    setVisited(x,y) {
+        this.visited[coord(this,x,y)] = true;
+    }
+
+    setup(left, top, display) {
+        this.left = left;
+        this.top = top;
+        this.display = display;
+    }
+
+    drawTile(x,y) {
+        var tile = this.getTile(x,y);
+        var color = "#FFFFFF"
+        if ( !!TILE_COLOR[tile]) {
+            color = TILE_COLOR[tile];
+        }
+        this.display.draw(x+this.left,y+this.top,tile,color);            
+    }
+
+    isPassable(x,y) {
+        return !TILE_BLOCKING[this.getTile(x,y)];
+    }
+
+    isWall(x,y) {
+        var t = this.getTileWithBoundCheck(x,y);
+        return t === TILES.Wall || t === TILES.DeepWall;
+    }
+
+    show() {
+        this.display.clear();
+        for (var y = 0; y < this.height; ++y ) {
+            for (var x = 0; x < this.width; ++x ) {
+                this.drawTile(x,y);
+            }
+        }
+    }
+}
+
+export class TutorialMap extends RootMap {
+    constructor(mapWidth, mapHeight) {
+        super();
+        this.mapHeight = mapHeight;
+        this.mapWidth = mapWidth;
+        this.startx = mapWidth / 2;
+        this.starty = mapHeight / 2;
+    }
+
+    drawMap() {
+        new ROT.Map.Arena(this.mapWidth, this.mapHeight).create((x, y, wall) => {
+            this.display.draw(x, y, wall ? TILES.Wall : TILES.Floor);
+        });
+    }
+}
+
+export class Map extends RootMap {
+    constructor(width, height, generator) {
+        super();
+        this.width = width;
+        this.height = height;
 
         // called during creation, setup walls and floors
         function callback(x,y,what) {
@@ -105,60 +180,4 @@ export class Map {
             }
         }
     }
-
-    addItem(x, y, item) {
-        this.items[coord(this,x,y)] = item;
-    }
-    
-    setTile(x, y, tiletype) {
-        this.tiles[coord(this,x,y)] = tiletype;
-    }
-
-    getTile(x,y) {
-        return this.tiles[coord(this,x,y)];
-    }
-
-    getTileWithBoundCheck(x,y) {
-        if ( x < 0 || x >= this.width || y < 0 || y >= this.height ) return TILES.DeepWall;
-        return this.tiles[coord(this,x,y)];
-    }
- 
-    setVisited(x,y) {
-        this.visited[coord(this,x,y)] = true;
-    }
-
-    setup(left, top, display) {
-        this.left = left;
-        this.top = top;
-        this.display = display;
-    }
-
-    show() {
-        this.display.clear();
-        for(var y = 0; y < this.height; ++y ) {
-            for(var x = 0; x < this.width; ++x ) {
-                this.drawTile(x,y);
-            }
-        }
-    }
-
-    drawTile(x,y) {
-        var tile = this.getTile(x,y);
-        var color = "#FFFFFF"
-        if ( !!TILE_COLOR[tile]) {
-            color = TILE_COLOR[tile];
-        }
-        this.display.draw(x+this.left,y+this.top,tile,color);            
-    }
-
-    isPassable(x,y) {
-        return !TILE_BLOCKING[this.getTile(x,y)];
-    }
-
-    isWall(x,y) {
-        var t = this.getTileWithBoundCheck(x,y);
-        return t === TILES.Wall || t === TILES.DeepWall;
-    }
 }
-
-
