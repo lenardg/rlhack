@@ -115,7 +115,7 @@ export class Map {
         if(generator.getRooms) {
             this.setTile(this.entrance.x,this.entrance.y,TILES.StairsUp);
         }
-        this.setTile(this.exit.y,this.exit.y,TILES.StairsDown);
+        this.setTile(this.exit.x,this.exit.y,TILES.StairsDown);
     }
     getRandomLocation() {
         var location = {};
@@ -205,7 +205,7 @@ export class Map {
 
     drawTile(x,y) {
         var location = this.getLocation(x,y);
-        var color = "#FFFFFF"
+        var color = "#FFFFFF";
         if ( !location.item) {
             if ( !!TILE_COLOR[location.tile]) {
                 color = TILE_COLOR[location.tile];

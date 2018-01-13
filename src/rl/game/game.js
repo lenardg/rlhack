@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////////
 
 import { keyboard } from "./keyboard";
-import { extend } from "./util";
+import { compareLocation } from "./util";
 import { Player } from "./player";
 import { Messages } from "./messages";
 import { StatusPanel } from "./status";
@@ -112,14 +112,12 @@ export const game = (function(root) {
         });        
     }
 
-    function level_up() {
-        if(gamestate.currentMapLevel > 0) {
+    function use_stairs() {
+        if(compareLocation(gamestate.me.location,gamestate.currentMap.entrance)) {
             game.changeLevel(gamestate.currentMapLevel-1);
+        } else if (compareLocation(gamestate.me.location,gamestate.currentMap.exit)) {
+            game.changeLevel(gamestate.currentMapLevel+1);
         }
-    }
-
-    function level_down() {
-        game.changeLevel(gamestate.currentMapLevel+1);
     }
 
     function splash() {
@@ -195,8 +193,7 @@ export const game = (function(root) {
                 keybinding(ROT.VK_O, cmd_open);
                 keybinding(ROT.VK_C, cmd_close);
 
-                keybinding(ROT.VK_U, level_up);
-                keybinding(ROT.VK_J, level_down);
+                keybinding(ROT.VK_U, use_stairs);
                 
                 keybinding(ROT.VK_M, cmd_toggleMusic);
             }

@@ -15,3 +15,7 @@ export function extend(original, extension) {
     }
 }
 
+export function compareLocation(loc1,loc2) {
+    return loc1.x === loc2.x && loc1.y === loc2.y;
+}
+
