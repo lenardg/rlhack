@@ -15,7 +15,7 @@ import { StatusPanel } from "./status";
 import { Map, TILES, ITEMS } from "./maps";
 import { MusicController } from "./music";
 import { GenerateRandomItem } from "./items";
-
+import { BackendClient } from "./backend";
 
 export const game = (function(root) {
 
@@ -35,7 +35,8 @@ export const game = (function(root) {
         currentMap: {left: 0, top: 0},
         currentMapLevel: 0,
         levels: [],
-        music: new MusicController()
+        music: new MusicController(),
+        backend: new BackendClient()
     };
     
     function getWindowSize() {
@@ -124,7 +125,7 @@ export const game = (function(root) {
                                 game.messages.addMessage(`The ${mob.name} hits you!`);
                             }
                             else {
-                                endgame();
+                                game.playerDies(mob.name);
                                 game.messages.addMessage(`The ${mob.name} hits you and you DIE!`);
                                 game.messages.addMessage(`Press ESCAPE to start over!!`);
                             }
@@ -240,6 +241,9 @@ export const game = (function(root) {
         gamestate.currentMap =  {left: 0, top: 0};
         gamestate.currentMapLevel = 0;
         gamestate.levels = [];
+        gamestate.backend = new BackendClient()
+
+        gamestate.backend.start();
     
         game.changeLevel(0);
         game.status.updateAll();
@@ -273,8 +277,6 @@ export const game = (function(root) {
         game.display.drawText(20,15, "%c{#FF0000} ▒ ▒ ░░  ░ ░ ░ ▒   ░░░ ░ ░     ░ ░  ░  ▒ ░   ░    ░ ░  ░ ");        
         game.display.drawText(20,16, "%c{#FF0000} ░ ░         ░ ░     ░           ░     ░     ░  ░   ░    ");        
         game.display.drawText(20,17, "%c{#FF0000} ░ ░                           ░                  ░      ");        
-
-        game.mode = 2;
     }
 
     function use_stairs() {
@@ -395,6 +397,7 @@ export const game = (function(root) {
             splash();
 
             root.setTimeout(function() {
+                gamestate.backend.start();        
                 game.changeLevel(0);
                 game.status.updateAll();
                 gamestate.music.play("town");
@@ -466,6 +469,12 @@ export const game = (function(root) {
         waitDirection: function(callback) {
             this.waitCallback = callback;
             this.mode = 1;
+        },
+
+        playerDies(killer) {
+            game.mode = 2;
+            endgame();
+            gamestate.backend.end("Player", gamestate.me.xp, gamestate.me.gold, killer )
         }
     };
 
