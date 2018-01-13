@@ -16,6 +16,8 @@ import { Map, TILES, ITEMS, TutorialMap } from "./maps";
 
 export const game = (function(root) {
     const backendUrl = "http://rlbackend.azurewebsites.net";
+    const musicFiles = ["battle_1.mp3", "cave_2.mp3", "town_ambience_1.mp3"];
+    var activeSong = undefined;
 
     var opts = {
         screenWidth: 100,
@@ -282,9 +284,31 @@ export const game = (function(root) {
             ]);
         },
 
+        playSoundtrack: function() {
+            if (activeSong) activeSong.pause();
+
+            const song = musicFiles[Math.floor(Math.random() * musicFiles.length)];
+            if (!gamestate.song || gamestate.song !== song) {
+                gamestate.song = song;
+            } else {
+                const index = musicFiles.indexOf(song);
+                if (index === 0) {
+                    gamestate.song = musicFiles[1];
+                } else {
+                    gamestate.song = musicFiles[index - 1];
+                }
+            }
+
+            activeSong = new Audio(`music/${gamestate.song}`);
+            activeSong.loop = true;
+            activeSong.play();
+        },
+
         // this functions generates a new game level (assuming levels starts from 1 upward)
         // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm
         initLevel: function(level) {
+            this.playSoundtrack();
+
             if (level === 0) {
                 sendStartGameRequest();
                 gamestate.currentMap = new TutorialMap(

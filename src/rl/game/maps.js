@@ -171,7 +171,6 @@ class RootMap {
     }
 
     updateVision(viewerX, viewerY, visionRadius) {
-        console.log("updating vision");
         var fov = new ROT.FOV.PreciseShadowcasting(this.lightPasses.bind(this));
         var currentView = [];
         fov.compute(viewerX, viewerY, visionRadius, (x, y, r, visibility) => {
