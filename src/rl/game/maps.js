@@ -17,7 +17,10 @@ export const TILES = {
     StairsUp: '<',
     StairsDown: '>',
     Grass: '"',
+
+    // Action tiles
     Teleport: 'Z',
+    Well: 'W'
 };
 
 const TILE_COLOR = {
@@ -26,6 +29,7 @@ const TILE_COLOR = {
     "+": "#775500",
     "\'": "#775500",
     "Z": "#F000F0",
+    "W": "#F00000"
 };
 
 const TILE_BLOCKING = {
@@ -58,12 +62,18 @@ function coord(map,x,y) {
 }
 
 class RootMap {
-    constructor() {
+    constructor(width, height, winCallback, deathCallback) {
+        this.height = height;
+        this.width = width;
+        this.startx = width / 2;
+        this.starty = height / 2;
+        this.winCallback = winCallback;
+        this.deathCallback = deathCallback;
+
         this.tiles = [];
         this.items = [];
         this.viewed = [];
         this.currentView = [];
-        this.teleports = [];
     }
 
     addItem(x, y, item) {
@@ -75,8 +85,7 @@ class RootMap {
     }
 
     getTile(x,y) {
-        const teleport = this.teleports[coord(this,x,y)];
-        return teleport != null ? TILES.Teleport : this.tiles[coord(this,x,y)];
+        return this.tiles[coord(this,x,y)];
     }
 
     getItem(x,y) {
@@ -111,7 +120,7 @@ class RootMap {
     }
 
     drawTile(x,y) {
-        var item = this.getItem(x,y)
+        var item = this.getItem(x,y);
         var tile = this.getTile(x,y);
         var color = "#FFFFFF"
         if ( !!TILE_COLOR[tile]) {
@@ -135,9 +144,14 @@ class RootMap {
     }
 
     getAction(x, y) {
-        const teleport = this.teleports[coord(this,x,y)];
-
-        return teleport != null ? teleport.action : null;
+        switch (this.getTile(x, y)) {
+            case TILES.Teleport:
+                return this.winCallback;
+            case TILES.Well:
+                return () => this.deathCallback("Oops! You were a little bit stupid and you fell down a well");
+            default:
+                return null;
+        }
     }
 
     lightPasses(x,y) {
@@ -179,26 +193,21 @@ class RootMap {
 }
 
 export class TutorialMap extends RootMap {
-    constructor(mapWidth, mapHeight, successCallback) {
-        super();
-        this.height = mapHeight;
-        this.width = mapWidth;
-        this.startx = mapWidth / 2;
-        this.starty = mapHeight / 2;
+    constructor(mapWidth, mapHeight, winCallback, deathCallback) {
+        super(mapWidth, mapHeight, winCallback, deathCallback);
 
         new ROT.Map.Arena(this.width, this.height).create((x, y, wall) => {
             this.setTile(x, y, wall ? TILES.Wall : TILES.Floor);
         });
 
-        this.teleports[coord(this,this.startx + 2,this.starty)] = { action: successCallback };
+        this.setTile(this.startx + 2,this.starty,TILES.Teleport);
+        this.setTile(this.startx + 3,this.starty + 4,TILES.Well);
     }
 }
 
 export class Map extends RootMap {
-    constructor(width, height, generator) {
-        super();
-        this.width = width;
-        this.height = height;
+    constructor(width, height, winCallback, deathCallback, generator) {
+        super(width, height, winCallback, deathCallback);
 
         // called during creation, setup walls and floors
         function callback(x,y,what) {

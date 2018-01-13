@@ -45,6 +45,8 @@ export const game = (function(root) {
     }
 
     function move(mob,dx,dy) {
+        if (gamestate.dead) { return; }
+
         const nextX = mob.location.x + dx;
         const nextY = mob.location.y + dy;
 
@@ -101,6 +103,8 @@ export const game = (function(root) {
     }
 
     function cmd_open() {
+        if (gamestate.dead) { return; }
+
         game.messages.addMessage("Which direction you want to open the door? -");
         game.waitDirection(function(dx, dy) {
             var x = gamestate.me.location.x + dx;
@@ -116,6 +120,8 @@ export const game = (function(root) {
     }
 
     function cmd_close() {
+        if (gamestate.dead) { return; }
+
         game.messages.addMessage("Which direction you want to close the door? -");
         game.waitDirection(function(dx, dy) {
             var x = gamestate.me.location.x + dx;
@@ -131,6 +137,8 @@ export const game = (function(root) {
     }
 
     function cmd_toggleInventory() {
+        if (gamestate.dead) { return; }
+
         if (!gamestate.inventory.visible) {
             gamestate.inventory.show();
         } else {
@@ -256,7 +264,9 @@ export const game = (function(root) {
                 gamestate.currentMap = new TutorialMap(
                     opts.mapWidth,
                     opts.mapHeight,
-                    () => { this.nextLevel(); });
+                    () => { this.nextLevel(); },
+                    reason => { this.killPlayer(reason); }
+                );
             } else {
                 var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
                     dugPercentage: 0.4
@@ -264,6 +274,8 @@ export const game = (function(root) {
                 gamestate.currentMap = new Map(
                     opts.mapWidth,
                     opts.mapHeight,
+                    () => { this.nextLevel(); },
+                    reason => { this.killPlayer(reason); },
                     generator);
             }
             gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
@@ -298,6 +310,17 @@ export const game = (function(root) {
             gamestate.level = gamestate.level + 1;
             this.initLevel(gamestate.level);
             game.messages.addMessage(`You finished level ${gamestate.level-1}!`);
+        },
+
+        killPlayer(reason) {
+            gamestate.dead = true;
+            this.showDeathScreen(reason);
+        },
+
+        showDeathScreen(reason) {
+            game.display.clear();        
+            game.display.drawText(20,10, `%c{#ffffff} ${reason}`);
+            game.display.drawText(20,12, "%c{#c00000} ... and you are now DEAD!!!");
         },
 
         draw: function() {
