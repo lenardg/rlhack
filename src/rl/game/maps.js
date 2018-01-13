@@ -151,6 +151,12 @@ export class Map {
          this.tiles[coord(this,x,y)].item = item;
          this.items.push(item);
     }
+
+    pickUpItem(x, y) {
+        var item = this.tiles[coord(this,x,y)].item;
+        this.tiles[coord(this,x,y)].item = undefined;
+        return item;
+    }
     
     setTile(x, y, tiletype) {
         const c = coord(this,x,y);
