@@ -210,7 +210,7 @@ export class Map {
         this.display = display;
         this.player = player;
 
-        this.fov = new ROT.FOV.PreciseShadowcasting(this.lightPasses);
+        this.fov = new ROT.FOV.PreciseShadowcasting(this.lightPasses.bind(this));
     }
 
     show() {
@@ -222,10 +222,10 @@ export class Map {
     }
 
     drawTile(x,y,ignoreMonsters) {
-        var location = this.getLocation(x,y);
-        var color = "#FFFFFF";
-        let mob = this.hasMonster(x,y);
-        this.fov.compute(this.player.x, this.player.y, 10, function(x, y, r, visibility) {
+        this.fov.compute(this.player.location.x, this.player.location.y, 10, (vx, vy, r, visibility) => {
+            var color = "#FFFFFF";
+            let mob = this.hasMonster(vx,vy);
+            var location = this.getLocation(vx,vy);
             if ( !ignoreMonsters && !!mob ) {
                 this.drawMonster(mob);
             }
@@ -233,12 +233,12 @@ export class Map {
                 if ( !!TILE_COLOR[location.tile]) {
                     color = TILE_COLOR[location.tile];
                 }
-                this.display.draw(x+this.left,y+this.top,location.tile,color);
+                this.display.draw(vx+this.left,vy+this.top,location.tile,color);
             } else {
                 if ( !!ITEM_COLOR[location.item]) {
                     color = ITEM_COLOR[location.item];
                 }
-                this.display.draw(x+this.left,y+this.top,location.item,color);
+                this.display.draw(vx+this.left,vy+this.top,location.item,color);
             }
         });
     }
