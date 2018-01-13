@@ -350,7 +350,7 @@ export const game = (function(root) {
                 gamestate.currentMap = gamestate.levels[gamestate.currentMapLevel];
             }
             
-            gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
+            gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display, gamestate.me);
             gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
             for ( var x = 0; x < 5; ++x ) {    
                 gamestate.currentMap.addItemToRandomRoom();

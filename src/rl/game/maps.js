@@ -193,10 +193,13 @@ export class Map {
         this.visited[coord(this,x,y)] = true;
     }
 
-    setup(left, top, display) {
+    setup(left, top, display, player) {
         this.left = left;
         this.top = top;
         this.display = display;
+        this.player = player;
+
+        this.fov = new ROT.FOV.PreciseShadowcasting(this.lightPasses);
     }
 
     show() {
@@ -212,20 +215,22 @@ export class Map {
         var location = this.getLocation(x,y);
         var color = "#FFFFFF"
         let mob = this.hasMonster(x,y);
-        if ( !ignoreMonsters && !!mob ) {
-            this.drawMonster(mob);
-        }
-        else if ( !location.item) {
-            if ( !!TILE_COLOR[location.tile]) {
-                color = TILE_COLOR[location.tile];
+        this.fov.compute(this.player.x, this.player.y, 10, function(x, y, r, visibility) {
+            if ( !ignoreMonsters && !!mob ) {
+                this.drawMonster(mob);
             }
-            this.display.draw(x+this.left,y+this.top,location.tile,color);
-        } else {
-            if ( !!ITEM_COLOR[location.item]) {
-                color = ITEM_COLOR[location.item];
+            else if ( !location.item) {
+                if ( !!TILE_COLOR[location.tile]) {
+                    color = TILE_COLOR[location.tile];
+                }
+                this.display.draw(x+this.left,y+this.top,location.tile,color);
+            } else {
+                if ( !!ITEM_COLOR[location.item]) {
+                    color = ITEM_COLOR[location.item];
+                }
+                this.display.draw(x+this.left,y+this.top,location.item,color);
             }
-            this.display.draw(x+this.left,y+this.top,location.item,color);
-        }
+        });
     }
 
     drawMonster(monster) {
