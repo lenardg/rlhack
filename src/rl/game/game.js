@@ -44,10 +44,9 @@ export const game = (function(root) {
 
     function move(mob,dx,dy) {
         if ( gamestate.currentMap.isPassable( mob.location.x + dx, mob.location.y + dy)) {
-            gamestate.currentMap.drawTile( mob.location.x, mob.location.y );
             mob.move(dx, dy);
-            game.drawMonster(mob);
         }
+        game.draw();
     }
 
     function process_direction(dx,dy) {
@@ -232,6 +231,11 @@ export const game = (function(root) {
             this.messages.addMessage("Use arrow keys to move, o to open doors (followed by direction)");
         },
 
+        draw: function() {
+            gamestate.currentMap.show();
+            this.drawMonster(gamestate.me);
+        },
+        
         drawMonster: function(monster) {
             this.display.draw(monster.location.x + gamestate.currentMap.left, monster.location.y + gamestate.currentMap.top, monster.symbol, monster.color);
         },
