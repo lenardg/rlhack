@@ -11,6 +11,7 @@
     },
     "scripts": {
         "webserver": "ws",
-        "build": "webpack"
+        "build": "webpack",
+        "watch": "webpack --watch"
     }
 }
