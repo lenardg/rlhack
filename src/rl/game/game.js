@@ -179,7 +179,7 @@ export const game = (function(root) {
             splash()
 
             // initial inventory
-            gamestate.inventory = new Inventory(this.display);
+            gamestate.inventory = this.generateInventory();
 
             root.setTimeout(function() {
                 game.initLevel(gamestate.level);
@@ -187,6 +187,12 @@ export const game = (function(root) {
             }, 1000);
         },
 
+        generateInventory: function() {
+            return new Inventory(this.display, [
+                { name: "Torch", key: "Torch" },
+                { name: "Matches", key: "Matches" }
+            ]);
+        },
 
         // this functions generates a new game level (assuming levels starts from 1 upward)
         // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm

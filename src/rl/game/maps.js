@@ -41,7 +41,8 @@ export const ITEMS = {
     SoftArmor: '(',
     HardArmor: '[',
     Shield: ')',
-    Weapon: '|'
+    Weapon: '|',
+    Torch: '*'
 };
 
 function coord(map,x,y) {
