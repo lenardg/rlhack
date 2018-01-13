@@ -114,32 +114,55 @@ export const game = (function(root) {
 
     function level_up() {
         if(gamestate.currentMapLevel > 0) {
-            game.initLevel(gamestate.currentMapLevel-1);
+            game.initDungeonLevel(gamestate.currentMapLevel-1);
             game.drawMonster(gamestate.me);
         }
     }
 
     function level_down() {
-        game.initLevel(gamestate.currentMapLevel+1);
+        game.initDungeonLevel(gamestate.currentMapLevel+1);
         game.drawMonster(gamestate.me);
     }
 
     function splash() {
-        game.display.clear();        
-        game.display.drawText(4,0, "we are loading, please stand by ....");
-        game.display.drawText(4,9,  "%c{#5B0180}██████╗ ██╗   ██╗███╗   ██╗ ██████╗ ███████╗ ██████╗ ███╗   ██╗███████╗     ██████╗ ███████╗");
-        game.display.drawText(4,10, "%c{#5B0180}██╔══██╗██║   ██║████╗  ██║██╔════╝ ██╔════╝██╔═══██╗████╗  ██║██╔════╝    ██╔═══██╗██╔════╝");
-        game.display.drawText(4,11, "%c{#5B0180}██║  ██║██║   ██║██╔██╗ ██║██║  ███╗█████╗  ██║   ██║██╔██╗ ██║███████╗    ██║   ██║█████╗  ");
-        game.display.drawText(4,12, "%c{#5B0180}██║  ██║██║   ██║██║╚██╗██║██║   ██║██╔══╝  ██║   ██║██║╚██╗██║╚════██║    ██║   ██║██╔══╝  ");
-        game.display.drawText(4,13, "%c{#5B0180}██████╔╝╚██████╔╝██║ ╚████║╚██████╔╝███████╗╚██████╔╝██║ ╚████║███████║    ╚██████╔╝██║     ");    
-        game.display.drawText(4,14, "%c{#5B0180}╚═════╝  ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝     ╚═════╝ ╚═╝     ");    
-        game.display.drawText(4,15, "%c{#5B0180}██████╗ ███████╗██╗   ██╗██╗███████╗██╗ ██████╗  ██████╗ ███╗   ██╗ █████╗                  ");    
-        game.display.drawText(4,16, "%c{#5B0180}██╔══██╗██╔════╝██║   ██║██║██╔════╝██║██╔═══██╗██╔═══██╗████╗  ██║██╔══██╗                 ");    
-        game.display.drawText(4,17, "%c{#5B0180}██║  ██║█████╗  ██║   ██║██║███████╗██║██║   ██║██║   ██║██╔██╗ ██║███████║                 ");    
-        game.display.drawText(4,18, "%c{#5B0180}██║  ██║██╔══╝  ╚██╗ ██╔╝██║╚════██║██║██║   ██║██║   ██║██║╚██╗██║██╔══██║                 ");    
-        game.display.drawText(4,19, "%c{#5B0180}██████╔╝███████╗ ╚████╔╝ ██║███████║██║╚██████╔╝╚██████╔╝██║ ╚████║██║  ██║                 ");    
-        game.display.drawText(4,20, "%c{#5B0180}╚═════╝ ╚══════╝  ╚═══╝  ╚═╝╚══════╝╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝                 ");    
-
+        game.display.clear();
+        game.display.drawText(0,0, "we are loading, please stand by ....");    
+        if(ROT.RNG.getUniform() > 0.5) {
+            game.display.drawText(20,10, "%c{#444444}#%c{#FF0000}    ,'|\"\\   .-. .-..-. .-.  ,--,   ,---.   .---.  .-. .-.   .---.       ");
+            game.display.drawText(20,11, "%c{#5B4100}#%c{#FF0000}    | |\\ \\  | | | ||  \\| |.' .'    | .-'  / .-. ) |  \\| |  ( .-._)      ");
+            game.display.drawText(20,12, "%c{#444444}#%c{#FF0000}    | | \\ \\ | | | ||   | ||  |  __ | `-.  | | |(_)|   | | (_) \\         ");
+            game.display.drawText(20,13, "%c{#444444}#%c{#FF0000}    | |  \\ \\| | | || |\\  |\\  \\ ( _)| .-'  | | | | | |\\  | _  \\ \\        ");
+            game.display.drawText(20,14, "%c{#444444}#%c{#FF0000}    /(|`-' /| `-')|| | |)| \\  `-) )|  `--.\\ `-' / | | |)|( `-'  )       ");
+            game.display.drawText(20,15, "%c{#444444}#%c{#FF0000}   (__)`--' `---(_)/(  (_) )\\____/ /( __.' )---'  /(  (_) `----'        ");
+            game.display.drawText(20,16, "%c{#444444}#%c{#FF0000}                  (__)    (__)    (__)    (_)    (__)                   ");
+            game.display.drawText(20,17, "%c{#444444}#%c{#FF0000}           .---.  ,---.                                                 ");
+            game.display.drawText(20,18, "%c{#5B4100}#%c{#FF0000}          / .-. ) | .-'                                                 ");
+            game.display.drawText(20,19, "%c{#444444}#%c{#FF0000}          | | |(_)| `-.                                                 ");
+            game.display.drawText(20,20, "%c{#444444}#%c{#FF0000}          | | | | | .-'                                                 ");
+            game.display.drawText(20,21, "%c{#444444}#%c{#FF0000}          \\ `-' / | |                                                   ");
+            game.display.drawText(20,22, "%c{#444444}#%c{#FF0000}           )---'  )\\|                                                   ");
+            game.display.drawText(20,23, "%c{#444444}#%c{#FF0000}          (_)    (__)                                                   ");
+            game.display.drawText(20,24, "%c{#5B4100}#%c{#FF0000}    ,'|\"\\   ,---..-.   .-.,-.   .---. ,-. .---.   .---.  .-. .-.  .--.  ");
+            game.display.drawText(20,25, "%c{#444444}#%c{#FF0000}    | |\\ \\  | .-' \\ \\ / / |(|  ( .-._)|(|/ .-. ) / .-. ) |  \\| | / /\\ \\ ");
+            game.display.drawText(20,26, "%c{#444444}#%c{#FF0000}    | | \\ \\ | `-.  \\ V /  (_) (_) \\   (_)| | |(_)| | |(_)|   | |/ /__\\ \\");
+            game.display.drawText(20,27, "%c{#444444}#%c{#FF0000}    | |  \\ \\| .-'   ) /   | | _  \\ \\  | || | | | | | | | | |\\  ||  __  |");
+            game.display.drawText(20,28, "%c{#444444}#%c{#FF0000}    /(|`-' /|  `--.(_)    | |( `-'  ) | |\\ `-' / \\ `-' / | | |)|| |  |)|");
+            game.display.drawText(20,29, "%c{#444444}#%c{#FF0000}   (__)`--' /( __.'       `-' `----'  `-' )---'   )---'  /(  (_)|_|  (_)");
+            game.display.drawText(20,30, "%c{#5B4100}#%c{#FF0000}           (__)                          (_)     (_)    (__)            ");
+        } else {
+            game.display.drawText(4,9,  "%c{#5B0180}██████╗ ██╗   ██╗███╗   ██╗ ██████╗ ███████╗ ██████╗ ███╗   ██╗███████╗     ██████╗ ███████╗");
+            game.display.drawText(4,10, "%c{#5B0180}██╔══██╗██║   ██║████╗  ██║██╔════╝ ██╔════╝██╔═══██╗████╗  ██║██╔════╝    ██╔═══██╗██╔════╝");
+            game.display.drawText(4,11, "%c{#5B0180}██║  ██║██║   ██║██╔██╗ ██║██║  ███╗█████╗  ██║   ██║██╔██╗ ██║███████╗    ██║   ██║█████╗  ");
+            game.display.drawText(4,12, "%c{#5B0180}██║  ██║██║   ██║██║╚██╗██║██║   ██║██╔══╝  ██║   ██║██║╚██╗██║╚════██║    ██║   ██║██╔══╝  ");
+            game.display.drawText(4,13, "%c{#5B0180}██████╔╝╚██████╔╝██║ ╚████║╚██████╔╝███████╗╚██████╔╝██║ ╚████║███████║    ╚██████╔╝██║     ");    
+            game.display.drawText(4,14, "%c{#5B0180}╚═════╝  ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝     ╚═════╝ ╚═╝     ");    
+            game.display.drawText(4,15, "%c{#5B0180}██████╗ ███████╗██╗   ██╗██╗███████╗██╗ ██████╗  ██████╗ ███╗   ██╗ █████╗                  ");    
+            game.display.drawText(4,16, "%c{#5B0180}██╔══██╗██╔════╝██║   ██║██║██╔════╝██║██╔═══██╗██╔═══██╗████╗  ██║██╔══██╗                 ");    
+            game.display.drawText(4,17, "%c{#5B0180}██║  ██║█████╗  ██║   ██║██║███████╗██║██║   ██║██║   ██║██╔██╗ ██║███████║                 ");    
+            game.display.drawText(4,18, "%c{#5B0180}██║  ██║██╔══╝  ╚██╗ ██╔╝██║╚════██║██║██║   ██║██║   ██║██║╚██╗██║██╔══██║                 ");    
+            game.display.drawText(4,19, "%c{#5B0180}██████╔╝███████╗ ╚████╔╝ ██║███████║██║╚██████╔╝╚██████╔╝██║ ╚████║██║  ██║                 ");    
+            game.display.drawText(4,20, "%c{#5B0180}╚═════╝ ╚══════╝  ╚═══╝  ╚═╝╚══════╝╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝                 ");    
+        }
         gamestate.music.prepareMusic("town", "town_ambience_1");
         gamestate.music.prepareMusic("dungeon", "cave_4");
         gamestate.music.play("town");
@@ -208,17 +231,25 @@ export const game = (function(root) {
             splash();
 
             root.setTimeout(function() {
-                game.initLevel(0);
+
+                game.initDungeonLevel(0);
                 game.status.updateAll();
                 gamestate.music.play("dungeon");
                 game.drawMonster(gamestate.me);
             }, 2000);
         },
+        initTown: function() {
+            var generator = new ROT.Map.Arena(10,7);
+            gamestate.currentMap = new Map(10,7,generator);
+            gamestate.levels.push(gamestate.currentMap);
+            gamestate.me.moveTo(5,5);
+            gamestate.currentMap.show();
 
-
+            game.display.drawText(0,0, "%c{#FFFFFF}Town");
+        },
         // this functions generates a new game level (assuming levels starts from 1 upward)
         // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm
-        initLevel: function(level) {
+        initDungeonLevel: function(level) {
             var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
                 dugPercentage: 0.4
             });
