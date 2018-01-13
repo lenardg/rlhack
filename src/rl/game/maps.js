@@ -17,13 +17,15 @@ export const TILES = {
     StairsUp: '<',
     StairsDown: '>',
     Grass: '"',
+    Teleport: 'Z',
 };
 
 const TILE_COLOR = {
     "#": "#2E2E2E",
     ".": "#5F5F5F",
     "+": "#775500",
-    "\'": "#775500"
+    "\'": "#775500",
+    "Z": "2E2E2E",
 };
 
 const TILE_BLOCKING = {
@@ -118,16 +120,15 @@ class RootMap {
 export class TutorialMap extends RootMap {
     constructor(mapWidth, mapHeight) {
         super();
-        this.mapHeight = mapHeight;
-        this.mapWidth = mapWidth;
+        this.height = mapHeight;
+        this.width = mapWidth;
         this.startx = mapWidth / 2;
         this.starty = mapHeight / 2;
-    }
 
-    show() {
-        new ROT.Map.Arena(this.mapWidth, this.mapHeight).create((x, y, wall) => {
-            this.display.draw(x, y, wall ? TILES.Wall : TILES.Floor);
+        new ROT.Map.Arena(this.width, this.height).create((x, y, wall) => {
+            this.setTile(x, y, wall ? TILES.Wall : TILES.Floor);
         });
+        this.setTile(this.startx + 2, this.starty, TILES.Teleport);
     }
 }
 
