@@ -315,6 +315,7 @@ export const game = (function(root) {
         killPlayer(reason) {
             gamestate.dead = true;
             this.showDeathScreen(reason);
+            sendEndGameRequest(reason);
         },
 
         showDeathScreen(reason) {
@@ -337,10 +338,6 @@ export const game = (function(root) {
             this.waitCallback = callback;
             this.mode = 1;
         },
-
-        death: function(killer) {
-            sendEndGameRequest(killer);
-        }
     }
 
     return game;
