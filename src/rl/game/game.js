@@ -30,7 +30,7 @@ export const game = (function(root) {
     var gamestate = {
         me: new Player(),
         currentMap: {left: 0, top: 0},
-        level: 1,
+        level: 0,
     };
 
     function getWindowSize() {

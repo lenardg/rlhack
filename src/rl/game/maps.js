@@ -25,7 +25,7 @@ const TILE_COLOR = {
     ".": "#5F5F5F",
     "+": "#775500",
     "\'": "#775500",
-    "Z": "2E2E2E",
+    "Z": "#2E2E2E",
 };
 
 const TILE_BLOCKING = {
@@ -56,6 +56,7 @@ class RootMap {
         this.tiles = [];
         this.items = [];
         this.visited = [];
+        this.teleports = [];
     }
 
     addItem(x, y, item) {
