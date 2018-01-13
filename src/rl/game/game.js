@@ -32,7 +32,7 @@ export const game = (function(root) {
         currentMapLevel: 0,
         levels: []
     };
-
+    
     function getWindowSize() {
         return [root.innerWidth, root.innerHeight];
     }

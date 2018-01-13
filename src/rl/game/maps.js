@@ -91,7 +91,7 @@ export class Map {
         for ( var x = 0; x < this.width; ++x ) {
             for ( var y = 0; y < this.height; ++y ) {
                 if ( this.isWall(x,y) ) {
-                    if ( this.isWall(x-1, y-1) && 
+                    if (this.isWall(x-1, y-1) && 
                          this.isWall(x, y-1) && 
                          this.isWall(x+1, y-1) && 
                          this.isWall(x-1, y) && 
