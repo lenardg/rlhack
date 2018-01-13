@@ -26,6 +26,10 @@ const TILE_COLOR = {
     "\'": "#775500"
 };
 
+const ITEM_COLOR = {
+    "$": "#FFFF00"
+};
+
 const TILE_BLOCKING = {
     "#": true,
     ".": false,
@@ -33,7 +37,7 @@ const TILE_BLOCKING = {
     "\'": false
 };
 
-const ITEMS = {
+export const ITEMS = {
     Gold: '$',
     Scroll: '?',
     Potion: '!',
@@ -106,21 +110,52 @@ export class Map {
         }
     }
 
+    getRandomRoom() {
+        var rooms = generator.getRooms();
+        var roomNumber = Math.Round(ROT.RNG.getUniform()*rooms.length);
+        return rooms[roomNumber];
+    }
+
+    addItemToRandomPositionInRoom(room, item) {
+        addItem(getRandomXcoordInRoom(room), getRandomYcoordInRoom(room), item);
+    }
+
+    getRandomXcoordInRoom(room) {
+        var left = room.getLeft();
+        var right = room.getRight();
+        return left + Math.round((right - left) * ROT.RNG.getUniform());
+    }
+
+    getRandomYcoordInRoom(room) {
+        var top = room.getTop();
+        var bottom = room.getBottom();
+        return top + Math.round((bottom - top) * ROT.RNG.getUniform());      
+    }
+
     addItem(x, y, item) {
-        this.items[coord(this,x,y)] = item;
+        this.tiles[coord(this,x,y)].item = item;;
     }
     
     setTile(x, y, tiletype) {
-        this.tiles[coord(this,x,y)] = tiletype;
+        const c = coord(this,x,y);
+        if (!this.tiles[c]) {
+            this.tiles[c] = { tile: tiletype };
+        } else {
+            this.tiles[c].tile = tiletype;
+        }
     }
 
     getTile(x,y) {
+        return this.tiles[coord(this,x,y)].tile;
+    }
+
+    getLocation(x,y) {
         return this.tiles[coord(this,x,y)];
     }
 
     getTileWithBoundCheck(x,y) {
         if ( x < 0 || x >= this.width || y < 0 || y >= this.height ) return TILES.DeepWall;
-        return this.tiles[coord(this,x,y)];
+        return this.tiles[coord(this,x,y)].tile;
     }
  
     setVisited(x,y) {
@@ -143,12 +178,19 @@ export class Map {
     }
 
     drawTile(x,y) {
-        var tile = this.getTile(x,y);
-        var color = "#FFFFFF";
-        if ( !!TILE_COLOR[tile]) {
-            color = TILE_COLOR[tile];
+        var location = this.getLocation(x,y);
+        var color = "#FFFFFF"
+        if ( !location.item) {
+            if ( !!TILE_COLOR[location.tile]) {
+                color = TILE_COLOR[location.tile];
+            }
+            this.display.draw(x+this.left,y+this.top,location.tile,color);
+        } else {
+            if ( !!ITEM_COLOR[location.item]) {
+                color = ITEM_COLOR[location.item];
+            }
+            this.display.draw(x+this.left,y+this.top,location.item,color);
         }
-        this.display.draw(x+this.left,y+this.top,tile,color);            
     }
 
     isPassable(x,y) {
