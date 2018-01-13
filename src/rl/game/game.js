@@ -404,7 +404,6 @@ export const game = (function(root) {
                 gamestate.backend.start();        
                 game.changeLevel(0);
                 game.status.updateAll();
-                gamestate.music.play("town");
             }, 2000);
         },
         initTown: function() {
@@ -425,6 +424,7 @@ export const game = (function(root) {
                 this.initDungeonLevel(level);
             } else {
                 this.loadDungeonLevel(level);
+                
             }
             gamestate.currentMap = gamestate.levels[gamestate.currentMapLevel];
             gamestate.me.moveTo(gamestate.currentMap.entrance.x, gamestate.currentMap.entrance.y);
@@ -437,6 +437,7 @@ export const game = (function(root) {
         
         loadTown: function() {
             game.display.drawText(0,0, "%c{#FFFFFF}Town");
+            gamestate.music.play("town");
         },
 
         loadDungeonLevel: function(level) {
@@ -448,6 +449,7 @@ export const game = (function(root) {
             this.messages.addMessage("You are entering a dangerous dungeon.");
             this.messages.addMessage("BTW this is the messages area :)");
             this.messages.addMessage("Use arrow keys to move, o to open doors (followed by direction)");
+            gamestate.music.play("town");
         },
         
         // this functions generates a new game level (assuming levels starts from 1 upward)
