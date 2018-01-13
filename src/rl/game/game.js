@@ -239,7 +239,8 @@ export const game = (function(root) {
                 gamestate.currentMap.addItemToRandomRoom();
             }
             gamestate.currentMap.show();
-
+            game.status.updateAll();
+            
             game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level %s".format(level+1));
             game.display.drawText(0,opts.statusHeight - 3, "%c{#5B0080}DevisioonΔ");
             game.display.drawText(0,opts.statusHeight - 2, "%c{#5B0080}roguelike hackathon");
