@@ -1,10 +1,12 @@
 const MongoClient = require("mongodb").MongoClient;
 const assert = require("assert");
-const bodyParser = require("body-parser");
 const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+const ObjectId = require("mongodb").ObjectId;
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // Connection URL
-console.log(process.env.PASSWD);
 const url =
   "mongodb://admin:" +
   process.env.PASSWD +
@@ -25,10 +27,6 @@ const accessDB = callback =>
 
     client.close();
   });
-
-const app = express();
-app.use(bodyParser.json());
-app.listen(3000, () => console.log("Example app listening on port 3000!"));
 
 app.post("/games", function(req, res) {
   accessDB(collection => {
@@ -51,5 +49,17 @@ app.get("/games", function(req, res) {
       if (err) console.log(err);
       res.send(result);
     });
+  });
+});
+
+app.post("/endGame/:id", function(req, res) {
+  const gameId = req.params.id;
+  console.log(gameId);
+  accessDB(collection => {
+    const resp = collection
+      .findOne({ _id: ObjectId(gameId) })
+      .then(response => console.log(response, "resolvas"))
+      .catch(err => console.log(err));
+    res.send(resp);
   });
 });
