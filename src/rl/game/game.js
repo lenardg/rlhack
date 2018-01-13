@@ -31,6 +31,7 @@ export const game = (function(root) {
         me: new Player(),
         currentMap: {left: 0, top: 0},
         level: 0,
+        score: 0,
     };
 
     function getWindowSize() {
@@ -43,8 +44,22 @@ export const game = (function(root) {
     }
 
     function move(mob,dx,dy) {
-        if ( gamestate.currentMap.isPassable( mob.location.x + dx, mob.location.y + dy)) {
+        const nextX = mob.location.x + dx;
+        const nextY = mob.location.y + dy;
+
+        if (gamestate.currentMap.isPassable(nextX, nextY)) {
             mob.move(dx, dy);
+            const item = gamestate.currentMap.getItem(nextX, nextY);
+            if (item) {
+                for (var value of Object.values(ITEMS)) {
+                    if (item === value.key) {
+                        gamestate.score += value.value;
+                        game.display.drawText(0,3, `Score: ${gamestate.score}`);
+                        gamestate.currentMap.collectItem(nextX, nextY);
+                        game.messages.addMessage(`You collected ${value.key} with value ${value.value}`);
+                    }
+                }
+            }
         }
         game.draw();
     }
@@ -178,9 +193,6 @@ export const game = (function(root) {
             // show the splashscreen
             splash()
 
-            // initial inventory
-            gamestate.inventory = this.generateInventory();
-
             root.setTimeout(function() {
                 game.initLevel(gamestate.level);
                 game.drawMonster(gamestate.me);
@@ -220,20 +232,21 @@ export const game = (function(root) {
                         var x = gamestate.currentMap.startx + i;
                         var y = gamestate.currentMap.starty + j;
                         if (gamestate.currentMap.isPassable(x, y))
-                            gamestate.currentMap.addItem(x, y, ITEMS.Gold);
+                            gamestate.currentMap.addItem(x, y, ITEMS.Gold.key);
                     }
 
             this.display.clear();
             this.draw();
 
             game.display.drawText(0,0, `%c{#FFFFFF}Dungeon, level ${level}`);
-            game.display.drawText(0,2, "%c{#888888}Players stats here");
+            game.display.drawText(0,3, `Score: ${gamestate.score}`);
             game.display.drawText(0,opts.statusHeight - 3, "%c{#5B0080}DevisioonΔ");
             game.display.drawText(0,opts.statusHeight - 2, "%c{#5B0080}roguelike hackathon");
             game.display.drawText(0,opts.statusHeight - 1, "%c{#5B0080}2018");
 
-            this.messages.addMessage("You are entering a dangerous dungeon.");
-            this.messages.addMessage("BTW this is the messages area :)");
+            gamestate.inventory = this.generateInventory();
+
+            this.messages.addMessage("You are entering an escape room.");
             this.messages.addMessage("Use arrow keys to move, o to open doors (followed by direction)");
         },
 

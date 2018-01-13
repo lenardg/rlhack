@@ -36,15 +36,15 @@ const TILE_BLOCKING = {
 };
 
 export const ITEMS = {
-    Gold: '$',
-    Scroll: '?',
-    Potion: '!',
-    Ring: '○',
-    SoftArmor: '(',
-    HardArmor: '[',
-    Shield: ')',
-    Weapon: '|',
-    Torch: '*'
+    Gold: { key: '$', value: 100 },
+    Scroll: { key: '?', value: 50 },
+    Potion: { key: '!', value: 25 },
+    Ring: { key: '○', value: 150 },
+    SoftArmor: { key: '(', value: 200 },
+    HardArmor: { key: '[', value: 500 },
+    Shield: { key: ')', value: 250 },
+    Weapon: { key: '|', value: 150 },
+    Torch: { key: '*', value: 25 }
 };
 
 function coord(map,x,y) {
@@ -73,6 +73,10 @@ class RootMap {
 
     getItem(x,y) {
         return this.items[coord(this,x,y)];
+    }
+
+    removeItem(x,y) {
+        this.items[coord(this, x, y)] = undefined;
     }
 
     getTileWithBoundCheck(x,y) {
@@ -115,6 +119,13 @@ class RootMap {
             }
         }
     }
+
+    collectItem(x,y) {
+        this.setTile(x, y, TILES.Floor);
+        this.drawTile(x, y);
+        this.removeItem(x, y);
+    }
+
 }
 
 export class TutorialMap extends RootMap {

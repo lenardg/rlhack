@@ -3,17 +3,15 @@ import { ITEMS } from "./maps";
 export class Inventory {
     constructor(display, items) {
         this.display = display;
-        this.y = 4;
+        this.y = 5;
         this.width = 20;
-        this.visible = false;
         this.items = items;
+        this.show();
     }
 
     show() {
         this.display.drawText(2, this.y, "-= INVENTORY =-");
-
         this.items.forEach(this.drawItem.bind(this));
-
         this.visible = true;
     }
 
@@ -23,7 +21,7 @@ export class Inventory {
     }
 
     getIcon(key) {
-        return ITEMS[key] || '';
+        return ITEMS[key] && ITEMS[key].key || '';
     }
 
     hide() {
