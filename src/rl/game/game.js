@@ -11,7 +11,7 @@ import { keyboard } from "./keyboard";
 import { extend } from "./util";
 import { Player } from "./player";
 import { Messages } from "./messages";
-import { Map, TILES } from "./maps";
+import { Map, TILES, ITEMS } from "./maps";
 
 export const game = (function(root) {
 
@@ -185,6 +185,7 @@ export const game = (function(root) {
 
             gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
             gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
+            gamestate.currentMap.addItem(gamestate.currentMap.startx-2,gamestate.currentMap.starty-2,ITEMS.Gold);
             gamestate.currentMap.show();
 
             game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level 1");
