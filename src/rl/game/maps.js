@@ -33,7 +33,7 @@ const TILE_BLOCKING = {
     "\'": false
 };
 
-const ITEMS = {
+export const ITEMS = {
     Gold: '$',
     Scroll: '?',
     Potion: '!',
@@ -67,6 +67,10 @@ class RootMap {
         return this.tiles[coord(this,x,y)];
     }
 
+    getItem(x,y) {
+        return this.items[coord(this,x,y)];
+    }
+
     getTileWithBoundCheck(x,y) {
         if ( x < 0 || x >= this.width || y < 0 || y >= this.height ) return TILES.DeepWall;
         return this.tiles[coord(this,x,y)];
@@ -83,7 +87,7 @@ class RootMap {
     }
 
     drawTile(x,y) {
-        var tile = this.getTile(x,y);
+        var tile = this.getItem(x,y) || this.getTile(x,y);
         var color = "#FFFFFF"
         if ( !!TILE_COLOR[tile]) {
             color = TILE_COLOR[tile];

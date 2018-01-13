@@ -12,7 +12,7 @@ import { extend } from "./util";
 import { Player } from "./player";
 import { Messages } from "./messages";
 import { Inventory } from "./inventory";
-import { Map, TILES, TutorialMap } from "./maps";
+import { Map, TILES, ITEMS, TutorialMap } from "./maps";
 
 export const game = (function(root) {
 
@@ -206,6 +206,18 @@ export const game = (function(root) {
                     generator);
             }
             gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
+            gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
+
+	    // for test purposes
+            for (var i = -10; i < 10; i++)
+                for (var j = -10; j < 10; j++)
+                    if (Math.random() > 0.93 && (i != 0 || j != 0)) {
+                        var x = gamestate.currentMap.startx + i;
+                        var y = gamestate.currentMap.starty + j;
+                        if (gamestate.currentMap.isPassable(x, y))
+                            gamestate.currentMap.addItem(x, y, ITEMS.Gold);
+                    }
+
             gamestate.currentMap.show();
             gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
 
