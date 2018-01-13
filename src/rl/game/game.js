@@ -264,6 +264,7 @@ export const game = (function(root) {
         nextLevel() {
             gamestate.level = gamestate.level + 1;
             this.initLevel(gamestate.level);
+            game.messages.addMessage(`You finished level ${gamestate.level-1}!`);
         },
 
         draw: function() {
