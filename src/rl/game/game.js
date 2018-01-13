@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////////
 
 import { keyboard } from "./keyboard";
-import { extend } from "./util";
+import { extend, each } from "./util";
 import { Player } from "./player";
 import { Messages } from "./messages";
 import { StatusPanel } from "./status";
@@ -47,10 +47,56 @@ export const game = (function(root) {
 
     function move(mob,dx,dy) {
         if ( gamestate.currentMap.isPassable( mob.location.x + dx, mob.location.y + dy)) {
-            gamestate.currentMap.drawTile( mob.location.x, mob.location.y );
+            gamestate.currentMap.drawTile( mob.location.x, mob.location.y, true );
             mob.move(dx, dy);
             game.drawMonster(mob);
         }
+    }
+
+    // make the monsters move and things happen in the world
+    function process_world() {
+        let fov = new ROT.FOV.PreciseShadowcasting(gamestate.currentMap.lightPasses.bind(gamestate.currentMap));
+        let path = new ROT.Path.Dijkstra(
+            gamestate.me.location.x,
+            gamestate.me.location.y, 
+            gamestate.currentMap.lightPasses.bind(gamestate.currentMap), 
+            {topology: 4} );
+
+        let cansee = false;
+        function canMonsterSeePlayer(x,y,r,v) {
+            if(v != 0 && x == gamestate.me.location.x && y == gamestate.me.location.y) {
+                cansee = true;
+            }
+        }
+
+        each(gamestate.currentMap.mobs, (mob) => {
+            cansee = false;
+            fov.compute(mob.location.x, mob.location.y, 10, canMonsterSeePlayer);
+            if ( cansee ) {
+                let first = true, second = true, x, y;
+                path.compute(mob.location.x, mob.location.y, (px,py) => {
+                    if ( first ) {
+                        first = false;
+                    } else if (second ) {
+                        x = px;
+                        y = py;
+                        second = false;
+                    }
+                });
+                if ( !second ) {
+                    if ( x == gamestate.me.location.x && y == gamestate.me.location.y ) {
+                        // attach player
+                        game.messages.addMessage(`The ${mob.name} attacks you`);
+                    }
+                    else {
+                        // move toward player
+                        let dx = x - mob.location.x;
+                        let dy = y - mob.location.y;
+                        move(mob, dx, dy);
+                    }
+                }
+            }
+        });
     }
 
     function process_direction(dx,dy) {
@@ -59,27 +105,49 @@ export const game = (function(root) {
     }
 
     function move_left() {
-        if (game.mode == 1 ) { process_direction(-1, 0); return; } 
-        move(gamestate.me,-1,0);
+        if (game.mode == 1 ) { 
+            process_direction(-1, 0); 
+        } else { 
+            move(gamestate.me,-1,0);
+        }
+        process_world();        
     }
 
     function move_right() {
-        if (game.mode == 1 ) { process_direction(1, 0); return; } 
-        move(gamestate.me,1,0);
+        if (game.mode == 1 ) { 
+            process_direction(1, 0); 
+        } else {
+            move(gamestate.me,1,0);
+        }
+        process_world();
     }
 
     function move_up() {
-        if (game.mode == 1 ) { process_direction(0, -1); return; } 
-        move(gamestate.me,0,-1);
+        if (game.mode == 1 ) { 
+            process_direction(0, -1); 
+        } 
+        else {
+            move(gamestate.me,0,-1);
+        }
+        process_world();
     }
 
     function move_down() {
-        if (game.mode == 1 ) { process_direction(0, 1); return; } 
-        move(gamestate.me,0,1);
+        if (game.mode == 1 ) { 
+            process_direction(0, 1); 
+        } else { 
+            move(gamestate.me,0,1);
+        }
+        process_world();
     }
 
     function cmd_toggleMusic() {
         gamestate.music.toggleMusic();
+    }
+
+    function cmd_rest() {
+        // do nothing
+        process_world();
     }
 
     function cmd_open() {
@@ -201,6 +269,8 @@ export const game = (function(root) {
                 keybinding(ROT.VK_J, level_down);
                 
                 keybinding(ROT.VK_M, cmd_toggleMusic);
+
+                keybinding(ROT.VK_R, cmd_rest);
             }
 
             // pass in options to the constructor to change the default 80x25 size
@@ -258,6 +328,8 @@ export const game = (function(root) {
             if(level >= gamestate.levels.length) {
                 //new level
                 gamestate.currentMap = new Map(opts.mapWidth, opts.mapHeight, generator);
+                gamestate.currentMap.setDungeonLevel(level);
+                gamestate.currentMap.addMonsters();
                 gamestate.levels.push(gamestate.currentMap);
             } else {
                 //previously generated level
@@ -283,7 +355,7 @@ export const game = (function(root) {
         },
 
         drawMonster: function(monster) {
-            this.display.draw(monster.location.x + gamestate.currentMap.left, monster.location.y + gamestate.currentMap.top, monster.symbol, monster.color);
+            gamestate.currentMap.drawMonster(monster);
         },
 
         waitDirection: function(callback) {
