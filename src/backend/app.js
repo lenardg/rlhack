@@ -4,7 +4,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const ObjectId = require("mongodb").ObjectId;
-app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(bodyParser.json());
 app.listen(3000, () => console.log("Example app listening on port 3000!"));
 
 // Connection URL
@@ -34,11 +35,8 @@ app.post("/games", function(req, res) {
     const input = req.body;
     const startTime = new Date().getTime();
     const doc = Object.assign({}, input, { startTime });
-    const output = Object.assign({}, doc);
     collection.insert(doc, (err, docs) => {
-      const id = docs.insertedIds[0];
-      output.id = id;
-      res.send(output);
+      res.send(doc);
     });
   });
 });
