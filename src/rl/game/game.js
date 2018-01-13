@@ -211,7 +211,9 @@ export const game = (function(root) {
             
             gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
             gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
-            gamestate.currentMap.addItem(gamestate.currentMap.startx-2,gamestate.currentMap.starty-2,ITEMS.Gold);
+            for ( var x = 0; x < 5; ++x ) {    
+                gamestate.currentMap.addItemToRandomRoom();
+            }
             gamestate.currentMap.show();
 
             game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level %s".format(level+1));

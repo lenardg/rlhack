@@ -37,7 +37,7 @@ const TILE_BLOCKING = {
     "\'": false
 };
 
-export const ITEMS = {
+const ITEMS = {
     Gold: '$',
     Scroll: '?',
     Potion: '!',
@@ -47,6 +47,8 @@ export const ITEMS = {
     Shield: ')',
     Weapon: '|'
 };
+
+const NUMBER_OF_ITEMS = Object.values(ITEMS).length;
 
 function coord(map,x,y) {
     return y * map.width + x;
@@ -77,6 +79,7 @@ export class Map {
 
         // assign starting position and draw all the doors
         var rooms = generator.getRooms();
+        this.rooms = rooms;
         for ( var r = 0; r < rooms.length; ++r ) {
             var room = rooms[r];
             if ( r == 0 ) {
@@ -110,14 +113,26 @@ export class Map {
         }
     }
 
+    addItemToRandomRoom() {
+        this.addItemToRandomPositionInRoom(this.getRandomRoom(), this.getRandomItem());
+    }
+
+    getRandomItem() {
+        return Object.values(ITEMS)[Math.round(NUMBER_OF_ITEMS*ROT.RNG.getUniform())];
+    }
+
     getRandomRoom() {
-        var rooms = generator.getRooms();
-        var roomNumber = Math.Round(ROT.RNG.getUniform()*rooms.length);
+        var rooms = this.rooms;
+        var roomNumber = Math.round(ROT.RNG.getUniform()*rooms.length-1);
         return rooms[roomNumber];
     }
 
     addItemToRandomPositionInRoom(room, item) {
-        addItem(getRandomXcoordInRoom(room), getRandomYcoordInRoom(room), item);
+        do {            
+            var x = this.getRandomXcoordInRoom(room);
+            var y = this.getRandomYcoordInRoom(room);
+        } while (this.tiles[coord(this,x,y)].item);
+        this.addItem(x, y, item);
     }
 
     getRandomXcoordInRoom(room) {
@@ -133,7 +148,8 @@ export class Map {
     }
 
     addItem(x, y, item) {
-        this.tiles[coord(this,x,y)].item = item;;
+         this.tiles[coord(this,x,y)].item = item;
+         this.items.push(item);
     }
     
     setTile(x, y, tiletype) {
