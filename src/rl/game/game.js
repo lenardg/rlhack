@@ -36,6 +36,7 @@ export const game = (function(root) {
         currentMap: {left: 0, top: 0},
         level: 0,
         score: 0,
+        wellProbability: 0.990
     };
 
     function getWindowSize() {
@@ -371,7 +372,7 @@ export const game = (function(root) {
 
             randomApply((x, y) => {
                 gamestate.currentMap.addTile(x, y, TILES.Well);
-            }, 0.98);
+            }, gamestate.wellProbability);
 
             this.display.clear();
             this.draw();
@@ -390,6 +391,7 @@ export const game = (function(root) {
 
         nextLevel() {
             gamestate.level = gamestate.level + 1;
+            gamestate.wellProbability = gamestate.wellProbability - 0.002;
             this.initLevel(gamestate.level);
             game.messages.addMessage(`You finished level ${gamestate.level-1}!`);
         },
