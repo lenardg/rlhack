@@ -3,7 +3,7 @@ import { Monster } from "./monsters";
 
 export class Player extends Monster {
     constructor() {
-        super("ME", "@", "#FFFFFF", 1, 999, 10, 0, 0 );
+        super("ME", "@", "#FFFFFF", 1, 999, 10, 0, 0, 8);
 
         this.level = 1;
     

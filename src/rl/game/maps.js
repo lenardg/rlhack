@@ -158,6 +158,15 @@ class RootMap {
         return !TILE_BLOCKING[this.getTile(x,y)];
     }
 
+    getRandomPassableLocation() {
+        while (true) {
+            var x = Math.round(Math.random() * this.width);
+            var y = Math.round(Math.random() * this.height);
+            if (this.isPassable(x, y))
+                return {x: x, y: y};
+        }
+    }
+
     isFreeTile(x,y) {
         const tile = this.getTile(x,y);
         return (tile === TILES.Floor || tile === TILES.Grass) &&
@@ -189,6 +198,18 @@ class RootMap {
         Object.keys(currentView).forEach((pos) => {
             this.viewed[pos] = true;
         });
+    }
+
+    canSee(viewerX, viewerY, targetX, targetY, visionRadius) {
+        console.log("checking monster vision");
+        var fov = new ROT.FOV.PreciseShadowcasting(this.lightPasses.bind(this));
+        var visible = false;
+        fov.compute(viewerX, viewerY, visionRadius, (x, y, r, visibility) => {
+            if (x == targetX && y == targetY)
+                visible = true;
+        });
+        console.log("Monster vision on player: " + visible);
+        return visible;
     }
 
     isWall(x,y) {

@@ -13,6 +13,7 @@ import { Player } from "./player";
 import { Messages } from "./messages";
 import { Inventory } from "./inventory";
 import { Map, TILES, ITEMS, TutorialMap } from "./maps";
+import { AIMonster } from "./monsters";
 
 export const game = (function(root) {
     const backendUrl = "http://rlbackend.azurewebsites.net";
@@ -28,11 +29,13 @@ export const game = (function(root) {
         statusWidth: 20,
         statusHeight: 33,
         messagesHeight: 3,
-        messagesLeft: 20
+        messagesLeft: 20,
+        monsterCount: 2
     };
 
     var gamestate = {
         me: new Player(),
+        monsters: [],
         currentMap: {left: 0, top: 0},
         level: 0,
         score: 0,
@@ -56,6 +59,12 @@ export const game = (function(root) {
 
         if (!gamestate.currentMap.isPassable(nextX, nextY)) {
             return;
+        }
+
+        //move monsters here too, rename / refactor
+        for (var monster of gamestate.monsters) {
+            var dir = monster.chooseDirection();
+            monster.move(dir.x, dir.y);
         }
 
         var action = gamestate.currentMap.getAction(nextX, nextY);
@@ -334,7 +343,7 @@ export const game = (function(root) {
         // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm
         initLevel: function(level) {
             this.playSoundtrack();
-
+            gamestate.monsters = []
             if (level === 0) {
                 sendStartGameRequest();
                 gamestate.currentMap = new TutorialMap(
@@ -374,6 +383,9 @@ export const game = (function(root) {
                 gamestate.currentMap.addTile(x, y, TILES.Well);
             }, gamestate.wellProbability);
 
+            for (var i = 0; i < opts.monsterCount; ++i)
+                gamestate.monsters.push(new AIMonster("Monsu", "X", "#EE5588", 10, 10, 3, 3, 3, 4, gamestate));
+
             this.display.clear();
             this.draw();
 
@@ -410,9 +422,11 @@ export const game = (function(root) {
         },
 
         draw: function() {
-            gamestate.currentMap.updateVision(gamestate.me.location.x, gamestate.me.location.y, 8);
+            gamestate.currentMap.updateVision(gamestate.me.location.x, gamestate.me.location.y, gamestate.me.vision);
             gamestate.currentMap.show();
             this.drawMonster(gamestate.me);
+            for (var monster of gamestate.monsters)
+                this.drawMonster(monster); 
         },
         
         drawMonster: function(monster) {
