@@ -68,7 +68,8 @@ class RootMap {
     }
 
     getTile(x,y) {
-        return this.tiles[coord(this,x,y)];
+        const teleport = this.teleports[coord(this,x,y)];
+        return teleport != null ? TILES.Teleport : this.tiles[coord(this,x,y)];
     }
 
     getItem(x,y) {
@@ -107,6 +108,12 @@ class RootMap {
         return !TILE_BLOCKING[this.getTile(x,y)];
     }
 
+    getAction(x, y) {
+        const teleport = this.teleports[coord(this,x,y)];
+
+        return teleport != null ? teleport.action : null; 
+    }
+
     isWall(x,y) {
         var t = this.getTileWithBoundCheck(x,y);
         return t === TILES.Wall || t === TILES.DeepWall;
@@ -129,7 +136,7 @@ class RootMap {
 }
 
 export class TutorialMap extends RootMap {
-    constructor(mapWidth, mapHeight) {
+    constructor(mapWidth, mapHeight, successCallback) {
         super();
         this.height = mapHeight;
         this.width = mapWidth;
@@ -139,7 +146,8 @@ export class TutorialMap extends RootMap {
         new ROT.Map.Arena(this.width, this.height).create((x, y, wall) => {
             this.setTile(x, y, wall ? TILES.Wall : TILES.Floor);
         });
-        this.setTile(this.startx + 2, this.starty, TILES.Teleport);
+
+        this.teleports[coord(this,this.startx + 2,this.starty)] = { action: successCallback };
     }
 }
 

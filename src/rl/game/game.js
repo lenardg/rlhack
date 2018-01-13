@@ -48,10 +48,17 @@ export const game = (function(root) {
         const nextY = mob.location.y + dy;
 
         if (gamestate.currentMap.isPassable(nextX, nextY)) {
-            mob.move(dx, dy);
+        if (!gamestate.currentMap.isPassable(mob.location.x + dx, mob.location.y + dy)) {
+            return;
+        }
+
+        var action = gamestate.currentMap.getAction(mob.location.x + dx, mob.location.y + dy);
             const item = gamestate.currentMap.getItem(nextX, nextY);
             if (item) {
                 for (var value of Object.values(ITEMS)) {
+        if (action) {
+            action();
+            return;
                     if (item === value.key) {
                         gamestate.score += value.value;
                         game.display.drawText(0,3, `Score: ${gamestate.score}`);
@@ -61,6 +68,8 @@ export const game = (function(root) {
                 }
             }
         }
+
+        mob.move(dx, dy);
         game.draw();
     }
 
@@ -212,7 +221,8 @@ export const game = (function(root) {
             if (level === 0) {
                 gamestate.currentMap = new TutorialMap(
                     opts.mapWidth,
-                    opts.mapHeight);
+                    opts.mapHeight,
+                    () => { this.nextLevel(); });
             } else {
                 var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
                     dugPercentage: 0.4
@@ -248,6 +258,11 @@ export const game = (function(root) {
 
             this.messages.addMessage("You are entering an escape room.");
             this.messages.addMessage("Use arrow keys to move, o to open doors (followed by direction)");
+        },
+
+        nextLevel() {
+            gamestate.level = gamestate.level + 1;
+            this.initLevel(gamestate.level);
         },
 
         draw: function() {
