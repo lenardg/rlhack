@@ -7,19 +7,24 @@
 //
 ///////////////////////////////////////////////////////////////
 
+import { choice } from "./util";
+
 export class Monster {
     constructor(name, symbol, color, minlevel, maxlevel, hp, strength, armor) {
         this.name = name;
+        this.isPlayer = false;
+        
         this.symbol = symbol;
         this.color = color;
         this.minlevel = minlevel;
         this.maxlevel = maxlevel;
         
         this.hp = hp;
-        this.strength = strength;
         this.armor = armor;
-    
-        this.location = { x: 39, y: 12 };
+
+        this.strength = strength;
+        
+        this.location = { x: 1, y: 1 };
     }
 
     move(dx,dy) {
@@ -34,6 +39,22 @@ export class Monster {
 }
 
 export const monsters = [
-    new Monster("kobold", "k", "#207020", 1, 5, 10),
-    new Monster("Haskell perhonen", "H", "#ed9797", 2, 6, 35)
+    new Monster("kobold", "k", "#207020", 0, 5, 10),
+    new Monster("goblin", "g", "#707020", 0, 5, 10),
+    new Monster("orc", "o", "#207020", 2, 5, 15),
+    new Monster("Haskell", "H", "#ed9797", 2, 6, 35)
 ];
+
+export function GenerateRandomMonster(dungeonlevel) {
+    let possibleMonsters = [];
+    for( let midx in monsters) {
+        let m = monsters[midx];
+        if ( m.minlevel <= dungeonlevel && dungeonlevel <= m.maxlevel) {
+            possibleMonsters.push(m);
+        }
+    }    
+
+    let mob = choice(possibleMonsters);
+
+    return new Monster(mob.name, mob.symbol, mob.color, mob.minlevel, mob.maxlevel, mob.hp, mob.strength, mob.armor);
+}

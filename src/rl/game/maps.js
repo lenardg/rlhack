@@ -7,6 +7,9 @@
 //
 ///////////////////////////////////////////////////////////////
 
+import { GenerateRandomMonster } from "./monsters";
+import { each } from "./util";
+
 export const TILES = {
     Wall: '#',
     DeepWall: ' ',
@@ -37,15 +40,15 @@ const TILE_BLOCKING = {
     "\'": false
 };
 
-const ITEMS = {
+export const ITEMS = {
     Gold: '$',
-    Scroll: '?',
-    Potion: '!',
-    Ring: '○',
     SoftArmor: '(',
     HardArmor: '[',
     Shield: ')',
-    Weapon: '|'
+    Weapon: '|',
+    // Scroll: '?',
+    // Potion: '!',
+    // Ring: '○',
 };
 
 const NUMBER_OF_ITEMS = Object.values(ITEMS).length;
@@ -61,6 +64,7 @@ export class Map {
     
         this.tiles = [];
         this.items = [];
+        this.mobs = [];
         this.visited = [];
         this.entrance = {};
         this.exit = {};
@@ -138,6 +142,11 @@ export class Map {
         return rooms[roomNumber];
     }
 
+    getRandomCoordinateInRandomRoom() {
+        const room = this.getRandomRoom();
+        return { x: this.getRandomXcoordInRoom(room), y: this.getRandomYcoordInRoom(room) };
+    }
+
     addItemToRandomPositionInRoom(room, item) {
         do {            
             var x = this.getRandomXcoordInRoom(room);
@@ -161,6 +170,12 @@ export class Map {
     addItem(x, y, item) {
          this.tiles[coord(this,x,y)].item = item;
          this.items.push(item);
+    }
+
+    pickUpItem(x, y) {
+        var item = this.tiles[coord(this,x,y)].item;
+        this.tiles[coord(this,x,y)].item = undefined;
+        return item;
     }
     
     setTile(x, y, tiletype) {
@@ -203,10 +218,14 @@ export class Map {
         }
     }
 
-    drawTile(x,y) {
+    drawTile(x,y,ignoreMonsters) {
         var location = this.getLocation(x,y);
         var color = "#FFFFFF";
-        if ( !location.item) {
+        let mob = this.hasMonster(x,y);
+        if ( !ignoreMonsters && !!mob ) {
+            this.drawMonster(mob);
+        }
+        else if ( !location.item) {
             if ( !!TILE_COLOR[location.tile]) {
                 color = TILE_COLOR[location.tile];
             }
@@ -219,6 +238,19 @@ export class Map {
         }
     }
 
+    drawMonster(monster) {
+        this.display.draw(monster.location.x + this.left, monster.location.y + this.top, monster.symbol, monster.color);
+    }
+
+    hasMonster(x,y) {
+        if ( !this.mobs ) return undefined;
+        let atLocation = undefined;
+        each(this.mobs, (mob) => {
+            if ( mob.location.x == x && mob.location.y == y ) atLocation = mob;
+        });
+        return atLocation;
+    }
+
     isPassable(x,y) {
         return !TILE_BLOCKING[this.getTile(x,y)];
     }
@@ -226,6 +258,27 @@ export class Map {
     isWall(x,y) {
         var t = this.getTileWithBoundCheck(x,y);
         return t === TILES.Wall || t === TILES.DeepWall;
+    }
+
+    addMonsters() {
+        let numberOfMonsters = Math.round(ROT.RNG.getUniform() * 5) + 5;
+        for ( let i = 0; i < numberOfMonsters; ++i ) {
+            let mob = GenerateRandomMonster(this.dungeonlevel);
+            mob.location = this.getRandomCoordinateInRandomRoom();
+            this.mobs.push(mob);
+        }
+    }
+
+    setDungeonLevel(level) {
+        this.dungeonlevel = level;
+    }
+
+    lightPasses(x,y) {
+        const tile = this.getTileWithBoundCheck(x,y);
+        if(tile == TILES.Wall || tile == TILES.DeepWall || tile == TILES.ClosedDoor) {
+            return false;
+        }
+        return true;
     }
 }
 

@@ -8,10 +8,12 @@
 ///////////////////////////////////////////////////////////////
 
 import { Monster } from "./monsters";
+import { ITEMS } from "./maps";
 
 export class Player extends Monster {
     constructor() {
         super("ME", "@", "#FFFFFF", 1, 999, 10, 0, 0 );
+        this.isPlayer = true;
 
         this.level = 1;
         this.xp = 0;
@@ -35,10 +37,28 @@ export class Player extends Monster {
         this.location.x = 43;
 
         this.updated = undefined;
+
+        this.inventory = [];
     }
 
     takeGold(gold) {
         this.gold += gold;
+        this.queueUpdate();
+    }
+
+    takeItem(item) {
+        this.inventory.push(item);
+    }
+
+    addItemToInventory(item) {
+        if (item.type === ITEMS.Gold) {
+            this.takeGold(item.amount);
+        } else {
+            this.takeItem(item);
+        }
+    }
+
+    queueUpdate() {
         if ( !!this.updated ) { 
             this.updated();
         }
