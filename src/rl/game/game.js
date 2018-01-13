@@ -224,6 +224,8 @@ export const game = (function(root) {
                     }
 
             this.display.clear();
+            this.draw();
+
             game.display.drawText(0,0, `%c{#FFFFFF}Dungeon, level ${level}`);
             game.display.drawText(0,2, "%c{#888888}Players stats here");
             game.display.drawText(0,opts.statusHeight - 3, "%c{#5B0080}DevisioonΔ");
