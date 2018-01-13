@@ -29,7 +29,8 @@ const TILE_COLOR = {
     "+": "#775500",
     "\'": "#775500",
     "Z": "#F000F0",
-    "W": "#F00000"
+    "W": "#F00000",
+    "!": "#FFD700"
 };
 
 const TILE_BLOCKING = {
@@ -126,19 +127,29 @@ class RootMap {
     drawTile(x,y) {
         var item = this.getItem(x,y);
         var tile = this.getTile(x,y);
-        var color = "#FFFFFF"
-        if ( !!TILE_COLOR[tile]) {
+        var color = "#FFFFFF";
+
+        var visibility = this.getVisibility(x, y);
+        var viewed = this.hasViewed(x, y);
+        var obj;
+        if (!viewed) {
+            obj = null;
+        }
+        else if (visibility == 0.0) {
+            obj = tile;
             color = TILE_COLOR[tile];
         }
-        var visibility = 1; // this.getVisibility(x, y);
-        var viewed = true; //this.hasViewed(x, y);
-        var obj;
-        if (!viewed)
-            obj = null;
-        else if (visibility == 0.0)
-            obj = tile;
-        else
+        else {
+            if (item != null) {
+                obj = item;
+                color = TILE_COLOR[item];
+            } else {
+                obj = tile;
+                color = TILE_COLOR[tile];
+            }
+            
             obj = item || tile;
+        }
 
         this.display.draw(x+this.left,y+this.top,obj,color);
     }

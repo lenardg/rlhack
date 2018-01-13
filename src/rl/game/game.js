@@ -366,6 +366,10 @@ export const game = (function(root) {
             }, 0.93);
 
             randomApply((x, y) => {
+                gamestate.currentMap.addItem(x, y, ITEMS.Potion.key);
+            }, 0.991);
+
+            randomApply((x, y) => {
                 gamestate.currentMap.addTile(x, y, TILES.Well);
             }, 0.98);
 
