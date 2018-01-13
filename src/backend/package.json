@@ -1,5 +1,8 @@
 {
   "name": "rl-backend",
   "version": "0.1",
-  "description": "roguelike hackathon, backend server"
+  "description": "roguelike hackathon, backend server",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
 }
