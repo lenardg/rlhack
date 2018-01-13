@@ -25,7 +25,7 @@ const TILE_COLOR = {
     ".": "#5F5F5F",
     "+": "#775500",
     "\'": "#775500",
-    "Z": "#2E2E2E",
+    "Z": "#F000F0",
 };
 
 const TILE_BLOCKING = {
