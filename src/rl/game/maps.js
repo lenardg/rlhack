@@ -178,14 +178,6 @@ export class Map {
     }
 
     drawTile(x,y) {
-<<<<<<< HEAD
-        var tile = this.getTile(x,y);
-        var color = "#FFFFFF";
-        if ( !!TILE_COLOR[tile]) {
-            color = TILE_COLOR[tile];
-        }
-        this.display.draw(x+this.left,y+this.top,tile,color);            
-=======
         var location = this.getLocation(x,y);
         var color = "#FFFFFF"
         if ( !location.item) {
@@ -198,8 +190,7 @@ export class Map {
                 color = ITEM_COLOR[location.item];
             }
             this.display.draw(x+this.left,y+this.top,location.item,color);
-        }            
->>>>>>> matias
+        }
     }
 
     isPassable(x,y) {
