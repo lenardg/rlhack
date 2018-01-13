@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "description": "roguelike hackathon, backend server",
   "scripts": {
-    "start": "node app.js"
+    "start": "nodemon app.js"
   },
   "dependencies": {
     "express": "^4.16.2",
     "mongodb": "^3.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.14.11"
   }
 }
