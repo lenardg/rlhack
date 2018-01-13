@@ -122,12 +122,12 @@ export class Map {
     }
 
     getRandomItem() {
-        return Object.values(ITEMS)[Math.round(NUMBER_OF_ITEMS*ROT.RNG.getUniform())-1];
+        return Object.values(ITEMS)[Math.floor(NUMBER_OF_ITEMS*ROT.RNG.getUniform())];
     }
 
     getRandomRoom() {
         var rooms = this.rooms;
-        var roomNumber = Math.round(ROT.RNG.getUniform()*rooms.length-1);
+        var roomNumber = Math.floor(ROT.RNG.getUniform()*rooms.length);
         return rooms[roomNumber];
     }
 
@@ -159,6 +159,12 @@ export class Map {
     addItem(x, y, item) {
          this.tiles[coord(this,x,y)].item = item;
          this.items.push(item);
+    }
+
+    pickUpItem(x, y) {
+        var item = this.tiles[coord(this,x,y)].item;
+        this.tiles[coord(this,x,y)].item = undefined;
+        return item;
     }
     
     setTile(x, y, tiletype) {
