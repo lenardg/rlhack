@@ -47,24 +47,25 @@ export const game = (function(root) {
         const nextX = mob.location.x + dx;
         const nextY = mob.location.y + dy;
 
-        if (gamestate.currentMap.isPassable(nextX, nextY)) {
-        if (!gamestate.currentMap.isPassable(mob.location.x + dx, mob.location.y + dy)) {
+        if (!gamestate.currentMap.isPassable(nextX, nextY)) {
             return;
         }
 
-        var action = gamestate.currentMap.getAction(mob.location.x + dx, mob.location.y + dy);
-            const item = gamestate.currentMap.getItem(nextX, nextY);
-            if (item) {
-                for (var value of Object.values(ITEMS)) {
+        var action = gamestate.currentMap.getAction(nextX, nextY);
+
         if (action) {
             action();
             return;
-                    if (item === value.key) {
-                        gamestate.score += value.value;
-                        game.display.drawText(0,3, `Score: ${gamestate.score}`);
-                        gamestate.currentMap.collectItem(nextX, nextY);
-                        game.messages.addMessage(`You collected ${value.key} with value ${value.value}`);
-                    }
+        }
+
+        const item = gamestate.currentMap.getItem(nextX, nextY);
+        if (item) {
+            for (var value of Object.values(ITEMS)) {
+                if (item === value.key) {
+                    gamestate.score += value.value;
+                    game.display.drawText(0,3, `Score: ${gamestate.score}`);
+                    gamestate.currentMap.collectItem(nextX, nextY);
+                    game.messages.addMessage(`You collected ${value.key} with value ${value.value}`);
                 }
             }
         }
