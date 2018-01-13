@@ -50,7 +50,11 @@ export const game = (function(root) {
 
     function move(mob,dx,dy,isPlayer) {
         if ( gamestate.currentMap.isPassable( mob.location.x + dx, mob.location.y + dy)) {
-            gamestate.currentMap.drawTile( mob.location.x, mob.location.y, true );
+            if (!!mob.isPlayer) {
+                gamestate.currentMap.drawTile( mob.location.x, mob.location.y, true );
+            } else {
+                gamestate.currentMap.drawTileWithoutFov( mob.location.x, mob.location.y, true );
+            }
             mob.move(dx, dy);
             game.drawMonster(mob);
             if ( !!mob.isPlayer) {
@@ -207,7 +211,7 @@ export const game = (function(root) {
             var y = gamestate.me.location.y + dy;
             if ( gamestate.currentMap.getTile(x, y) == TILES.ClosedDoor ) {
                 gamestate.currentMap.setTile(x, y, TILES.OpenedDoor);
-                gamestate.currentMap.drawTile(x, y);
+                gamestate.currentMap.drawTileWithoutFov(x, y);
                 game.messages.addMessage("Opened.");        
             } else {
                 game.messages.addMessage("I see no door there to open");        
@@ -224,7 +228,7 @@ export const game = (function(root) {
             var y = gamestate.me.location.y + dy;
             if ( gamestate.currentMap.getTile(x, y) == TILES.OpenedDoor ) {
                 gamestate.currentMap.setTile(x, y, TILES.ClosedDoor);
-                gamestate.currentMap.drawTile(x, y);
+                gamestate.currentMap.drawTileWithoutFov(x, y);
                 game.messages.addMessage("Closed.");        
             } else {
                 game.messages.addMessage("I see no door there to close");                        
@@ -399,13 +403,11 @@ export const game = (function(root) {
                 gamestate.backend.start();        
                 game.changeLevel(0);
                 game.status.updateAll();
-                gamestate.music.play("town");
             }, 2000);
         },
         initTown: function() {
             var generator = new ROT.Map.Arena(30, 20);
             var map = new Map(30, 20, generator);
-            map.setup(opts.statusWidth, opts.messagesHeight, this.display);
             gamestate.levels.push(map);
             this.loadTown();
         },
@@ -417,14 +419,15 @@ export const game = (function(root) {
                 this.initTown();
             } else if (level === 0 ) {
                 this.loadTown();
-            }
-            else if(level >= gamestate.levels.length) {
+            } else if(level >= gamestate.levels.length) {
                 this.initDungeonLevel(level);
             } else {
                 this.loadDungeonLevel(level);
+                
             }
             gamestate.currentMap = gamestate.levels[gamestate.currentMapLevel];
             gamestate.me.moveTo(gamestate.currentMap.entrance.x, gamestate.currentMap.entrance.y);
+            gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display, gamestate.me);
             gamestate.currentMap.show();
             game.drawMonster(gamestate.me);
             game.status.updateAll();
@@ -433,6 +436,7 @@ export const game = (function(root) {
         
         loadTown: function() {
             game.display.drawText(0,0, "%c{#FFFFFF}Town");
+            gamestate.music.play("town");
         },
 
         loadDungeonLevel: function(level) {
@@ -444,6 +448,7 @@ export const game = (function(root) {
             this.messages.addMessage("You are entering a dangerous dungeon.");
             this.messages.addMessage("BTW this is the messages area :)");
             this.messages.addMessage("Use arrow keys to move, o to open doors (followed by direction)");
+            gamestate.music.play("town");
         },
         
         // this functions generates a new game level (assuming levels starts from 1 upward)
@@ -453,7 +458,6 @@ export const game = (function(root) {
                 dugPercentage: 0.4
             });
             var map = new Map(opts.mapWidth, opts.mapHeight, generator);
-            map.setup(opts.statusWidth, opts.messagesHeight, this.display);
             for ( var x = 0; x < 5; ++x ) {    
                 map.addItemToRandomRoom();
             }

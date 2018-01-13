@@ -204,10 +204,13 @@ export class Map {
         this.visited[coord(this,x,y)] = true;
     }
 
-    setup(left, top, display) {
+    setup(left, top, display, player) {
         this.left = left;
         this.top = top;
         this.display = display;
+        this.player = player;
+
+        this.fov = new ROT.FOV.PreciseShadowcasting(this.lightPasses.bind(this));
     }
 
     show() {
@@ -219,13 +222,35 @@ export class Map {
     }
 
     drawTile(x,y,ignoreMonsters) {
-        var location = this.getLocation(x,y);
+        this.fov.compute(this.player.location.x, this.player.location.y, 10, (vx, vy, r, visibility) => {
+            var color = "#FFFFFF";
+            let mob = this.hasMonster(vx,vy);
+            var location = this.getLocation(vx,vy);
+            if ( !ignoreMonsters && !!mob ) {
+                this.drawMonster(mob);
+            }
+            else if ( !location.item) {
+                if ( !!TILE_COLOR[location.tile]) {
+                    color = TILE_COLOR[location.tile];
+                }
+                this.display.draw(vx+this.left,vy+this.top,location.tile,color);
+            } else {
+                if ( !!ITEM_COLOR[location.item]) {
+                    color = ITEM_COLOR[location.item];
+                }
+                this.display.draw(vx+this.left,vy+this.top,location.item,color);
+            }
+        });
+    }
+
+    drawTileWithoutFov(x,y,ignoreMonsters) {
         var color = "#FFFFFF";
         let mob = this.hasMonster(x,y);
+        var location = this.getLocation(x,y);
         if ( !ignoreMonsters && !!mob ) {
-            this.drawMonster(mob);
-        }
-        else if ( !location.item) {
+             this.drawMonster(mob);
+          }
+         else if ( !location.item) {
             if ( !!TILE_COLOR[location.tile]) {
                 color = TILE_COLOR[location.tile];
             }
@@ -284,7 +309,7 @@ export class Map {
     killMonster(mob) {
         for(var idx = 0; idx < this.mobs.length; ++idx ) { 
             if ( mob === this.mobs[idx] ) {
-                this.drawTile( mob.location.x, mob.location.y, true );
+                this.drawTileWithoutFov( mob.location.x, mob.location.y, true );
                 this.mobs.splice(idx, 1);
                 break;
             }
