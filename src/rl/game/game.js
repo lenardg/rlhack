@@ -12,6 +12,7 @@ import { extend } from "./util";
 import { Player } from "./player";
 import { Messages } from "./messages";
 import { Map, TILES } from "./maps";
+import { Inventory } from "./inventory";
 
 export const game = (function(root) {
 
@@ -28,7 +29,7 @@ export const game = (function(root) {
 
     var gamestate = {
         me: new Player(),
-        currentMap: {left: 0, top: 0}   
+        currentMap: {left: 0, top: 0}
     };
 
     function getWindowSize() {
@@ -103,6 +104,14 @@ export const game = (function(root) {
         });        
     }
 
+    function cmd_toggleInventory() {
+        if (!gamestate.inventory.visible) {
+            gamestate.inventory.show();
+        } else {
+            gamestate.inventory.hide();
+        }
+    }
+
     function splash() {
         game.display.clear();        
         game.display.drawText(0,0, "we are loading, please stand by ....");
@@ -143,6 +152,7 @@ export const game = (function(root) {
                 // commands
                 keybinding(ROT.VK_O, cmd_open);
                 keybinding(ROT.VK_C, cmd_close);
+                keybinding(ROT.VK_I, cmd_toggleInventory);
             }
 
             // pass in options to the constructor to change the default 80x25 size
@@ -168,6 +178,9 @@ export const game = (function(root) {
             // show the splashscreen
             splash()
 
+            // initial inventory
+            gamestate.inventory = new Inventory(this.display);
+
             root.setTimeout(function() {
                 game.initLevel(1);
                 game.drawMonster(gamestate.me);
@@ -187,7 +200,7 @@ export const game = (function(root) {
             gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
             gamestate.currentMap.show();
 
-            game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level 1");
+            game.display.drawText(0,0, `%c{#FFFFFF}Dungeon, level ${level}`);
             game.display.drawText(0,2, "%c{#888888}Players stats here");
             game.display.drawText(0,opts.statusHeight - 3, "%c{#5B0080}DevisioonΔ");
             game.display.drawText(0,opts.statusHeight - 2, "%c{#5B0080}roguelike hackathon");
