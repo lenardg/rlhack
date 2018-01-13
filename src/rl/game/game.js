@@ -246,7 +246,7 @@ export const game = (function(root) {
         gamestate.backend.start();
     
         game.changeLevel(0);
-        game.status.updateAll();
+        game.status.newPlayer(gamestate.me);
         gamestate.music.play("dungeon");
         game.drawMonster(gamestate.me);
 

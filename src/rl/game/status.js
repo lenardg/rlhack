@@ -46,6 +46,11 @@ export class StatusPanel {
         this.height = height;
     }
 
+    newPlayer(player) {
+        this.player = player;
+        this.updateAll();
+    }
+
     update(stat) {
         if (stat == STATS.Level) {
             clearStatRow(this,0);
