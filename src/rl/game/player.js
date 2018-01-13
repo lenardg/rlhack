@@ -12,7 +12,7 @@ import { ITEMS } from "./maps";
 
 export class Player extends Monster {
     constructor() {
-        super("ME", "@", "#FFFFFF", 1, 999, 10, 0, 0 );
+        super("ME", "@", "#FFFFFF", 1, 999, 10, 0, 0, 0, 0 );
         this.isPlayer = true;
 
         this.level = 1;
@@ -48,6 +48,13 @@ export class Player extends Monster {
 
     takeItem(item) {
         this.inventory.push(item);
+    }
+
+    takeDamage(hp) {
+        let r = super.takeDamage(hp);
+        this.queueUpdate();
+
+        return r;
     }
 
     addItemToInventory(item) {

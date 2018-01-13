@@ -100,7 +100,18 @@ export const game = (function(root) {
                 if ( !second ) {
                     if ( x == gamestate.me.location.x && y == gamestate.me.location.y ) {
                         // attach player
-                        game.messages.addMessage(`The ${mob.name} attacks you`);
+                        var dmg = mob.attack(gamestate.me);
+                        if ( !dmg ) {
+                            game.messages.addMessage(`The ${mob.name} tries to hit you but misses!`);
+                        } else {
+                            var result = gamestate.me.takeDamage(dmg);
+                            if ( result ) {
+                                game.messages.addMessage(`The ${mob.name} hits you!`);
+                            }
+                            else {
+                                game.messages.addMessage(`The ${mob.name} hits you and you DIE!`);
+                            }
+                        }
                     }
                     else {
                         // move toward player

@@ -242,7 +242,7 @@ export class Map {
     }
 
     isPassable(x,y) {
-        return !TILE_BLOCKING[this.getTile(x,y)];
+        return !TILE_BLOCKING[this.getTile(x,y)] && !this.hasMonster(x,y);
     }
 
     isWall(x,y) {
