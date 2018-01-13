@@ -159,6 +159,32 @@ export const game = (function(root) {
         game.drawMonster(gamestate.me);
     }
 
+    function clusterRandomApply(action) {
+        for (let i = -10; i < 10; i++) {
+            for (let j = -10; j < 10; j++) {
+                if (Math.random() > 0.93 && (i !== 0 || j !== 0)) {
+                    let x = gamestate.currentMap.startx + i;
+                    let y = gamestate.currentMap.starty + j;
+                    if (gamestate.currentMap.isFreeTile(x, y)) {
+                        action(x, y);
+                    }
+                }
+            }
+        }
+    }
+
+    function randomApply(action, probability) {
+        for (let x = 0; x < gamestate.currentMap.width; x++) {
+            for (let y = 0; y < gamestate.currentMap.height; y++) {
+                if (Math.random() > 0.93) {
+                    if (gamestate.currentMap.isFreeTile(x, y)) {
+                        action(x, y);
+                    }
+                }
+            }
+        }
+    }
+
     const sendEndGameRequest = (killer) => {
         if (!gamestate.gameId) {
             console.log('GameID unknown. Not sending end game request!')
@@ -281,24 +307,14 @@ export const game = (function(root) {
             gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
             gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
 
-	        // for test purposes
-            for (let i = -10; i < 10; i++)
-                for (let j = -10; j < 10; j++)
-                    if (Math.random() > 0.93 && (i != 0 || j != 0)) {
-                        let x = gamestate.currentMap.startx + i;
-                        let y = gamestate.currentMap.starty + j;
-                        if (gamestate.currentMap.isFreeTile(x, y))
-                            gamestate.currentMap.addItem(x, y, ITEMS.Gold.key);
-                    }
+            // for test purposes
+            randomApply((x, y) => {
+                gamestate.currentMap.addItem(x, y, ITEMS.Gold.key);
+            });
 
-            for (let i = -10; i < 10; i++)
-                for (let j = -10; j < 10; j++)
-                    if (Math.random() > 0.93 && (i != 0 || j != 0)) {
-                        let x = gamestate.currentMap.startx + i;
-                        let y = gamestate.currentMap.starty + j;
-                        if (gamestate.currentMap.isFreeTile(x, y))
-                            gamestate.currentMap.addTile(x, y, TILES.Well);
-                    }
+            randomApply((x, y) => {
+                gamestate.currentMap.addTile(x, y, TILES.Well);
+            });
 
             this.display.clear();
             this.draw();
