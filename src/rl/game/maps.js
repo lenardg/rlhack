@@ -119,7 +119,7 @@ export class TutorialMap extends RootMap {
         this.starty = mapHeight / 2;
     }
 
-    drawMap() {
+    show() {
         new ROT.Map.Arena(this.mapWidth, this.mapHeight).create((x, y, wall) => {
             this.display.draw(x, y, wall ? TILES.Wall : TILES.Floor);
         });

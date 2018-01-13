@@ -196,8 +196,6 @@ export const game = (function(root) {
                 gamestate.currentMap = new TutorialMap(
                     opts.mapWidth,
                     opts.mapHeight);
-                gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
-                gamestate.currentMap.drawMap();
             } else {
                 var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
                     dugPercentage: 0.4
@@ -206,11 +204,9 @@ export const game = (function(root) {
                     opts.mapWidth,
                     opts.mapHeight,
                     generator);
-                
-                gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
-                gamestate.currentMap.show();
             }
-
+            gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
+            gamestate.currentMap.show();
             gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
 
             game.display.drawText(0,0, `%c{#FFFFFF}Dungeon, level ${level}`);
