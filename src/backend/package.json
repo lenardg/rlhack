@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "roguelike hackathon, backend server",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node app.js",
+    "watch": "nodemon app.js"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
