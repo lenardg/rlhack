@@ -267,6 +267,7 @@ export const game = (function(root) {
         },
 
         draw: function() {
+            gamestate.currentMap.updateVision(gamestate.me.location.x, gamestate.me.location.y, 8);
             gamestate.currentMap.show();
             this.drawMonster(gamestate.me);
         },

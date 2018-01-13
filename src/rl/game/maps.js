@@ -35,6 +35,12 @@ const TILE_BLOCKING = {
     "\'": false
 };
 
+const TILE_VISION_BLOCKING = TILE_BLOCKING;
+
+const ITEM_VISION_BLOCKING = {
+    
+};
+
 export const ITEMS = {
     Gold: { key: '$', value: 100 },
     Scroll: { key: '?', value: 50 },
@@ -55,7 +61,8 @@ class RootMap {
     constructor() {
         this.tiles = [];
         this.items = [];
-        this.visited = [];
+        this.viewed = [];
+        this.currentView = [];
         this.teleports = [];
     }
 
@@ -85,8 +92,16 @@ class RootMap {
         return this.tiles[coord(this,x,y)];
     }
  
-    setVisited(x,y) {
-        this.visited[coord(this,x,y)] = true;
+    setViewed(x,y) {
+        this.viewed[coord(this,x,y)] = true;
+    }
+
+    hasViewed(x,y) {
+        return this.viewed[coord(this, x, y)];
+    }
+
+    getVisibility(x,y) {
+        return this.currentView[coord(this, x, y)] || 0.0;
     }
 
     setup(left, top, display) {
@@ -96,12 +111,23 @@ class RootMap {
     }
 
     drawTile(x,y) {
-        var tile = this.getItem(x,y) || this.getTile(x,y);
+        var item = this.getItem(x,y)
+        var tile = this.getTile(x,y);
         var color = "#FFFFFF"
         if ( !!TILE_COLOR[tile]) {
             color = TILE_COLOR[tile];
         }
-        this.display.draw(x+this.left,y+this.top,tile,color);            
+        var visibility = this.getVisibility(x, y);
+        var viewed = this.hasViewed(x, y);
+        var obj;
+        if (!viewed)
+            obj = null;
+        else if (visibility == 0.0)
+            obj = tile;
+        else
+            obj = item || tile;
+
+        this.display.draw(x+this.left,y+this.top,obj,color);
     }
 
     isPassable(x,y) {
@@ -111,7 +137,24 @@ class RootMap {
     getAction(x, y) {
         const teleport = this.teleports[coord(this,x,y)];
 
-        return teleport != null ? teleport.action : null; 
+        return teleport != null ? teleport.action : null;
+    }
+
+    lightPasses(x,y) {
+        return !TILE_VISION_BLOCKING[this.getTile(x,y)] && !ITEM_VISION_BLOCKING[this.getItem(x,y)];
+    }
+
+    updateVision(viewerX, viewerY, visionRadius) {
+        console.log("updating vision");
+        var fov = new ROT.FOV.PreciseShadowcasting(this.lightPasses.bind(this));
+        var currentView = [];
+        fov.compute(viewerX, viewerY, visionRadius, (x, y, r, visibility) => {
+            currentView[coord(this, x, y)] = (2 * visionRadius - r) / (2 * visionRadius);
+        });
+        this.currentView = currentView;
+        Object.keys(currentView).forEach((pos) => {
+            this.viewed[pos] = true;
+        });
     }
 
     isWall(x,y) {
