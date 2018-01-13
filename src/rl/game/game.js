@@ -14,6 +14,8 @@ import { Messages } from "./messages";
 import { StatusPanel } from "./status";
 import { Map, TILES, ITEMS } from "./maps";
 import { MusicController } from "./music";
+import { GenerateRandomItem } from "./items";
+
 
 export const game = (function(root) {
 
@@ -53,7 +55,13 @@ export const game = (function(root) {
             if ( !!mob.isPlayer) {
                 if ( !!gamestate.currentMap.getLocation( mob.location.x, mob.location.y ).item) {
                     var item = gamestate.currentMap.pickUpItem( mob.location.x, mob.location.y );
-                    mob.addItemToInventory(item);
+                    var generatedItem = GenerateRandomItem( item, gamestate.currentMapLevel );
+                    mob.addItemToInventory(generatedItem);
+                    if (generatedItem.type === ITEMS.Gold) {
+                        game.messages.addMessage("You picked up " + generatedItem.amount + " gold");
+                    } else {
+                        game.messages.addMessage("You picked up a " + generatedItem.name);
+                    }
                 }
             }
         }

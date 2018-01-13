@@ -8,6 +8,7 @@
 ///////////////////////////////////////////////////////////////
 
 import { Monster } from "./monsters";
+import { ITEMS } from "./maps";
 
 export class Player extends Monster {
     constructor() {
@@ -36,6 +37,8 @@ export class Player extends Monster {
         this.location.x = 43;
 
         this.updated = undefined;
+
+        this.inventory = [];
     }
 
     takeGold(gold) {
@@ -44,11 +47,15 @@ export class Player extends Monster {
     }
 
     takeItem(item) {
-
+        this.inventory.push(item);
     }
 
     addItemToInventory(item) {
-        
+        if (item.type === ITEMS.Gold) {
+            this.takeGold(item.amount);
+        } else {
+            this.takeItem(item);
+        }
     }
 
     queueUpdate() {

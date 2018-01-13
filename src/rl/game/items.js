@@ -27,7 +27,7 @@ export function GenerateRandomItem ( itemtype, dungeonlevel ) {
 
     if ( itemtype == ITEMS.Gold ) {
         let item = new Item(ITEMS.Gold);
-        item.amount = Math.round(dungeonlevel * 5 * ROT.RNG.getUniform() + 1);
+        item.amount = Math.max(dungeonlevel+1, Math.round(dungeonlevel+1 * ROT.RNG.getNormal(6, 2)));
         return item;
     } else if ( itemtype == ITEMS.Weapon) {
         const variants = [
