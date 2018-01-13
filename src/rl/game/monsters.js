@@ -79,10 +79,14 @@ export class Monster {
 }
 
 export const monsters = [
-    new Monster("kobold", "k", "#207020", 0, 5, 10, 4, 0, 1, 2),
-    new Monster("goblin", "g", "#707020", 0, 5, 10, 8, 0, 1, 2),
-    new Monster("orc", "o", "#207020", 2, 5, 15, 15, 0, 1, 2),
-    new Monster("Haskell", "H", "#ed9797", 2, 6, 35, 10, 0, 1, 2)
+    new Monster("bat", "b", "#804000", 1, 3, 3, 4, 0, 1, 2),
+    new Monster("wolf", "w", "#707070", 1, 4, 6, 4, 0, 1, 2),
+    new Monster("kobold", "k", "#207020", 1, 5, 10, 4, 0, 2, 3),
+    new Monster("rat", "r", "#905050", 1, 5, 5, 7, 0, 1, 2),
+    new Monster("goblin", "g", "#707020", 2, 5, 10, 8, 0, 2, 4),
+    new Monster("orc", "o", "#207020", 2, 6, 15, 15, 0, 2, 4),
+    new Monster("troll", "T", "#205090", 3, 8, 25, 20, 3, 4, 10),
+    new Monster("Haskell", "H", "#ed9797", 3, 10, 35, 10, 0, 5, 10)
 ];
 
 export function GenerateRandomMonster(dungeonlevel) {

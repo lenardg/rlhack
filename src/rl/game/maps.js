@@ -261,7 +261,7 @@ export class Map {
     }
 
     addMonsters() {
-        let numberOfMonsters = Math.round(ROT.RNG.getUniform() * 5) + 5;
+        let numberOfMonsters = Math.round(ROT.RNG.getUniform() * 7) + 7;
         for ( let i = 0; i < numberOfMonsters; ++i ) {
             let mob = GenerateRandomMonster(this.dungeonlevel);
             mob.location = this.getRandomCoordinateInRandomRoom();

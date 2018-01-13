@@ -267,16 +267,15 @@ export const game = (function(root) {
     function endgame() {
         game.display.clear();
 
-        game.display.drawText(20,8,  "%c{#FF0000}▓██   ██▓ ▒█████   █    ██    ▓█████▄  ██▓▓█████ ▓█████▄ ");        
-        game.display.drawText(20,9,  "%c{#FF0000} ▒██  ██▒▒██▒  ██▒ ██  ▓██▒   ▒██▀ ██▌▓██▒▓█   ▀ ▒██▀ ██▌");        
-        game.display.drawText(20,10, "%c{#FF0000}  ▒██ ██░▒██░  ██▒▓██  ▒██░   ░██   █▌▒██▒▒███   ░██   █▌");        
-        game.display.drawText(20,11, "%c{#FF0000}  ░ ▐██▓░▒██   ██░▓▓█  ░██░   ░▓█▄   ▌░██░▒▓█  ▄ ░▓█▄   ▌");        
-        game.display.drawText(20,12, "%c{#FF0000}  ░ ██▒▓░░ ████▓▒░▒▒█████▓    ░▒████▓ ░██░░▒████▒░▒████▓ ");        
-        game.display.drawText(20,13, "%c{#FF0000}   ██▒▒▒ ░ ▒░▒░▒░ ░▒▓▒ ▒ ▒     ▒▒▓  ▒ ░▓  ░░ ▒░ ░ ▒▒▓  ▒ ");        
-        game.display.drawText(20,14, "%c{#FF0000} ▓██ ░▒░   ░ ▒ ▒░ ░░▒░ ░ ░     ░ ▒  ▒  ▒ ░ ░ ░  ░ ░ ▒  ▒ ");        
-        game.display.drawText(20,15, "%c{#FF0000} ▒ ▒ ░░  ░ ░ ░ ▒   ░░░ ░ ░     ░ ░  ░  ▒ ░   ░    ░ ░  ░ ");        
-        game.display.drawText(20,16, "%c{#FF0000} ░ ░         ░ ░     ░           ░     ░     ░  ░   ░    ");        
-        game.display.drawText(20,17, "%c{#FF0000} ░ ░                           ░                  ░      ");        
+        const x = opts.statusWidth + 2;
+        let y = 8;
+        game.display.drawText(x,y++,  "%c{#FF0000}##    ##  #######  ##     ##    ########  #### ######## ########  ");
+        game.display.drawText(x,y++,  "%c{#FF0000} ##  ##  ##     ## ##     ##    ##     ##  ##  ##       ##     ## ");
+        game.display.drawText(x,y++,  "%c{#FF0000}  ####   ##     ## ##     ##    ##     ##  ##  ##       ##     ## ");
+        game.display.drawText(x,y++,  "%c{#FF0000}   ##    ##     ## ##     ##    ##     ##  ##  ######   ##     ## ");
+        game.display.drawText(x,y++,  "%c{#FF0000}   ##    ##     ## ##     ##    ##     ##  ##  ##       ##     ## ");
+        game.display.drawText(x,y++,  "%c{#FF0000}   ##    ##     ## ##     ##    ##     ##  ##  ##       ##     ## ");
+        game.display.drawText(x,y++,  "%c{#FF0000}   ##     #######   #######     ########  #### ######## ########  ");
     }
 
     function use_stairs() {
@@ -474,9 +473,10 @@ export const game = (function(root) {
         },
 
         playerDies(killer) {
-            game.mode = 2;
+            this.mode = 2;
             endgame();
-            gamestate.backend.end("Player", gamestate.me.xp, gamestate.me.gold, killer )
+            gamestate.backend.end("Player", gamestate.me.xp, gamestate.me.gold, killer );
+            this.status.updateAll();
         }
     };
 
