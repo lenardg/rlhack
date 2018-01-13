@@ -18,10 +18,11 @@ export class Monster {
         this.maxlevel = maxlevel;
         
         this.hp = hp;
-        this.strength = strength;
         this.armor = armor;
-    
-        this.location = { x: 39, y: 12 };
+
+        this.strength = strength;
+        
+        this.location = { x: 1, y: 1 };
     }
 
     move(dx,dy) {
@@ -37,5 +38,7 @@ export class Monster {
 
 export const monsters = [
     new Monster("kobold", "k", "#207020", 1, 5, 10),
-    new Monster("Haskell perhonen", "H", "#ed9797", 2, 6, 35)
+    new Monster("goblin", "g", "#707020", 1, 5, 10),
+    new Monster("orc", "o", "#207020", 2, 5, 15),
+    new Monster("Haskell", "H", "#ed9797", 2, 6, 35)
 ];
