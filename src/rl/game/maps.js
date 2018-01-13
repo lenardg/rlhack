@@ -37,15 +37,15 @@ const TILE_BLOCKING = {
     "\'": false
 };
 
-const ITEMS = {
+export const ITEMS = {
     Gold: '$',
-    Scroll: '?',
-    Potion: '!',
-    Ring: '○',
     SoftArmor: '(',
     HardArmor: '[',
     Shield: ')',
-    Weapon: '|'
+    Weapon: '|',
+    // Scroll: '?',
+    // Potion: '!',
+    // Ring: '○',
 };
 
 const NUMBER_OF_ITEMS = Object.values(ITEMS).length;

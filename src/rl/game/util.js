@@ -15,3 +15,7 @@ export function extend(original, extension) {
     }
 }
 
+export function choice(arr) {
+    const index = Math.floor(arr.length * ROT.RNG.getUniform());
+    return arr[index];
+}
