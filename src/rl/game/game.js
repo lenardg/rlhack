@@ -124,7 +124,9 @@ export const game = (function(root) {
                                 game.messages.addMessage(`The ${mob.name} hits you!`);
                             }
                             else {
+                                endgame();
                                 game.messages.addMessage(`The ${mob.name} hits you and you DIE!`);
+                                game.messages.addMessage(`Press ESCAPE to start over!!`);
                             }
                         }
                     }
@@ -145,7 +147,8 @@ export const game = (function(root) {
     }
 
     function move_left() {
-        if (game.mode == 1 ) { 
+        if ( game.mode == 2 ) return;
+        if ( game.mode == 1 ) { 
             process_direction(-1, 0); 
         } else { 
             move(gamestate.me,-1,0,true);
@@ -154,7 +157,8 @@ export const game = (function(root) {
     }
 
     function move_right() {
-        if (game.mode == 1 ) { 
+        if ( game.mode == 2 ) return;
+        if ( game.mode == 1 ) { 
             process_direction(1, 0); 
         } else {
             move(gamestate.me,1,0, true);
@@ -163,7 +167,8 @@ export const game = (function(root) {
     }
 
     function move_up() {
-        if (game.mode == 1 ) { 
+        if ( game.mode == 2 ) return;
+        if ( game.mode == 1 ) { 
             process_direction(0, -1); 
         } 
         else {
@@ -173,7 +178,8 @@ export const game = (function(root) {
     }
 
     function move_down() {
-        if (game.mode == 1 ) { 
+        if ( game.mode == 2 ) return;
+        if ( game.mode == 1 ) { 
             process_direction(0, 1); 
         } else { 
             move(gamestate.me,0,1, true);
@@ -186,11 +192,14 @@ export const game = (function(root) {
     }
 
     function cmd_rest() {
+        if ( game.mode == 2 ) return;
         // do nothing
         process_world();
     }
 
     function cmd_open() {
+        if ( game.mode == 2 ) return;
+
         game.messages.addMessage("Which direction you want to open the door? -");
         game.waitDirection(function(dx, dy) {
             var x = gamestate.me.location.x + dx;
@@ -206,6 +215,8 @@ export const game = (function(root) {
     }
 
     function cmd_close() {
+        if ( game.mode == 2 ) return;
+
         game.messages.addMessage("Which direction you want to close the door? -");
         game.waitDirection(function(dx, dy) {
             var x = gamestate.me.location.x + dx;
@@ -220,6 +231,23 @@ export const game = (function(root) {
         });        
     }
 
+    function cmd_restart() {
+        if ( game.mode != 2 ) return;
+
+        game.mode = 0;
+
+        gamestate.me = new Player();
+        gamestate.currentMap =  {left: 0, top: 0};
+        gamestate.currentMapLevel = 0;
+        gamestate.levels = [];
+    
+        game.initDungeonLevel(0);
+        game.status.updateAll();
+        gamestate.music.play("dungeon");
+        game.drawMonster(gamestate.me);
+
+    }
+
     function level_up() {
         if(gamestate.currentMapLevel > 0) {
             game.initDungeonLevel(gamestate.currentMapLevel-1);
@@ -230,6 +258,23 @@ export const game = (function(root) {
     function level_down() {
         game.initDungeonLevel(gamestate.currentMapLevel+1);
         game.drawMonster(gamestate.me);
+    }
+
+    function endgame() {
+        game.display.clear();
+
+        game.display.drawText(20,8,  "%c{#FF0000}▓██   ██▓ ▒█████   █    ██    ▓█████▄  ██▓▓█████ ▓█████▄ ");        
+        game.display.drawText(20,9,  "%c{#FF0000} ▒██  ██▒▒██▒  ██▒ ██  ▓██▒   ▒██▀ ██▌▓██▒▓█   ▀ ▒██▀ ██▌");        
+        game.display.drawText(20,10, "%c{#FF0000}  ▒██ ██░▒██░  ██▒▓██  ▒██░   ░██   █▌▒██▒▒███   ░██   █▌");        
+        game.display.drawText(20,11, "%c{#FF0000}  ░ ▐██▓░▒██   ██░▓▓█  ░██░   ░▓█▄   ▌░██░▒▓█  ▄ ░▓█▄   ▌");        
+        game.display.drawText(20,12, "%c{#FF0000}  ░ ██▒▓░░ ████▓▒░▒▒█████▓    ░▒████▓ ░██░░▒████▒░▒████▓ ");        
+        game.display.drawText(20,13, "%c{#FF0000}   ██▒▒▒ ░ ▒░▒░▒░ ░▒▓▒ ▒ ▒     ▒▒▓  ▒ ░▓  ░░ ▒░ ░ ▒▒▓  ▒ ");        
+        game.display.drawText(20,14, "%c{#FF0000} ▓██ ░▒░   ░ ▒ ▒░ ░░▒░ ░ ░     ░ ▒  ▒  ▒ ░ ░ ░  ░ ░ ▒  ▒ ");        
+        game.display.drawText(20,15, "%c{#FF0000} ▒ ▒ ░░  ░ ░ ░ ▒   ░░░ ░ ░     ░ ░  ░  ▒ ░   ░    ░ ░  ░ ");        
+        game.display.drawText(20,16, "%c{#FF0000} ░ ░         ░ ░     ░           ░     ░     ░  ░   ░    ");        
+        game.display.drawText(20,17, "%c{#FF0000} ░ ░                           ░                  ░      ");        
+
+        game.mode = 2;
     }
 
     function splash() {
@@ -311,6 +356,8 @@ export const game = (function(root) {
                 keybinding(ROT.VK_M, cmd_toggleMusic);
 
                 keybinding(ROT.VK_R, cmd_rest);
+
+                keybinding(ROT.VK_ESCAPE, cmd_restart);
             }
 
             // pass in options to the constructor to change the default 80x25 size
@@ -341,7 +388,6 @@ export const game = (function(root) {
             splash();
 
             root.setTimeout(function() {
-
                 game.initDungeonLevel(0);
                 game.status.updateAll();
                 gamestate.music.play("dungeon");
