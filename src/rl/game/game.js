@@ -30,7 +30,7 @@ export const game = (function(root) {
     var gamestate = {
         me: new Player(),
         currentMap: {left: 0, top: 0},
-        level: 0,
+        level: 1,
     };
 
     function getWindowSize() {
@@ -223,6 +223,7 @@ export const game = (function(root) {
                             gamestate.currentMap.addItem(x, y, ITEMS.Gold);
                     }
 
+            this.display.clear();
             game.display.drawText(0,0, `%c{#FFFFFF}Dungeon, level ${level}`);
             game.display.drawText(0,2, "%c{#888888}Players stats here");
             game.display.drawText(0,opts.statusHeight - 3, "%c{#5B0080}DevisioonΔ");

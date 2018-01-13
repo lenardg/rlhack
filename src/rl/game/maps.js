@@ -108,7 +108,6 @@ class RootMap {
     }
 
     show() {
-        this.display.clear();
         for (var y = 0; y < this.height; ++y ) {
             for (var x = 0; x < this.width; ++x ) {
                 this.drawTile(x,y);
