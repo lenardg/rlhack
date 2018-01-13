@@ -241,7 +241,7 @@ export const game = (function(root) {
         gamestate.currentMapLevel = 0;
         gamestate.levels = [];
     
-        game.initDungeonLevel(0);
+        game.changeLevel(0);
         game.status.updateAll();
         gamestate.music.play("dungeon");
         game.drawMonster(gamestate.me);
@@ -455,6 +455,8 @@ export const game = (function(root) {
             for ( var x = 0; x < 5; ++x ) {    
                 map.addItemToRandomRoom();
             }
+            map.setDungeonLevel(level);
+            map.addMonsters();
             gamestate.levels.push(map);
             this.loadDungeonLevel(level);
         },

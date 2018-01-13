@@ -24,7 +24,7 @@ export class Player extends Monster {
         this.intelligence = 20;
         this.constitution =20;
 
-        this.hp = 1;
+        this.hp = 15;
         this.max_hp = 15;
         this.power = 0;
         this.max_power = 0;
