@@ -243,6 +243,26 @@ export class Map {
         });
     }
 
+    drawTileWithoutFov(x,y,ignoreMonsters) {
+        var color = "#FFFFFF";
+        let mob = this.hasMonster(x,y);
+        var location = this.getLocation(x,y);
+        if ( !ignoreMonsters && !!mob ) {
+             this.drawMonster(mob);
+          }
+         else if ( !location.item) {
+            if ( !!TILE_COLOR[location.tile]) {
+                color = TILE_COLOR[location.tile];
+            }
+            this.display.draw(x+this.left,y+this.top,location.tile,color);
+        } else {
+            if ( !!ITEM_COLOR[location.item]) {
+                color = ITEM_COLOR[location.item];
+            }
+            this.display.draw(x+this.left,y+this.top,location.item,color);
+        }
+    }
+
     drawMonster(monster) {
         this.display.draw(monster.location.x + this.left, monster.location.y + this.top, monster.symbol, monster.color);
     }
@@ -289,7 +309,7 @@ export class Map {
     killMonster(mob) {
         for(var idx = 0; idx < this.mobs.length; ++idx ) { 
             if ( mob === this.mobs[idx] ) {
-                this.drawTile( mob.location.x, mob.location.y, true );
+                this.drawTileWithoutFov( mob.location.x, mob.location.y, true );
                 this.mobs.splice(idx, 1);
                 break;
             }

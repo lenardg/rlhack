@@ -50,7 +50,11 @@ export const game = (function(root) {
 
     function move(mob,dx,dy,isPlayer) {
         if ( gamestate.currentMap.isPassable( mob.location.x + dx, mob.location.y + dy)) {
-            gamestate.currentMap.drawTile( mob.location.x, mob.location.y, true );
+            if (!!mob.isPlayer) {
+                gamestate.currentMap.drawTile( mob.location.x, mob.location.y, true );
+            } else {
+                gamestate.currentMap.drawTileWithoutFov( mob.location.x, mob.location.y, true );
+            }
             mob.move(dx, dy);
             game.drawMonster(mob);
             if ( !!mob.isPlayer) {
@@ -207,7 +211,7 @@ export const game = (function(root) {
             var y = gamestate.me.location.y + dy;
             if ( gamestate.currentMap.getTile(x, y) == TILES.ClosedDoor ) {
                 gamestate.currentMap.setTile(x, y, TILES.OpenedDoor);
-                gamestate.currentMap.drawTile(x, y);
+                gamestate.currentMap.drawTileWithoutFov(x, y);
                 game.messages.addMessage("Opened.");        
             } else {
                 game.messages.addMessage("I see no door there to open");        
@@ -224,7 +228,7 @@ export const game = (function(root) {
             var y = gamestate.me.location.y + dy;
             if ( gamestate.currentMap.getTile(x, y) == TILES.OpenedDoor ) {
                 gamestate.currentMap.setTile(x, y, TILES.ClosedDoor);
-                gamestate.currentMap.drawTile(x, y);
+                gamestate.currentMap.drawTileWithoutFov(x, y);
                 game.messages.addMessage("Closed.");        
             } else {
                 game.messages.addMessage("I see no door there to close");                        
