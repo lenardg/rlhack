@@ -12,7 +12,7 @@ import { ITEMS } from "./maps";
 
 export class Player extends Monster {
     constructor() {
-        super("ME", "@", "#FFFFFF", 1, 999, 10, 0, 0 );
+        super("ME", "@", "#FFFFFF", 1, 999, 10, 0, 0, 0, 0 );
         this.isPlayer = true;
 
         this.level = 1;
@@ -24,8 +24,8 @@ export class Player extends Monster {
         this.intelligence = 20;
         this.constitution =20;
 
-        this.hp = 10;
-        this.max_hp = 10;
+        this.hp = 15;
+        this.max_hp = 15;
         this.power = 0;
         this.max_power = 0;
 
@@ -50,6 +50,18 @@ export class Player extends Monster {
         this.inventory.push(item);
     }
 
+    takeDamage(hp) {
+        let r = super.takeDamage(hp);
+        this.queueUpdate();
+
+        return r;
+    }
+
+    takeExperience(xp) {
+        this.xp += xp;
+        this.queueUpdate();
+    }
+
     addItemToInventory(item) {
         if (item.type === ITEMS.Gold) {
             this.takeGold(item.amount);
@@ -66,5 +78,11 @@ export class Player extends Monster {
 
     onUpdated(callback) {
         this.updated = callback;
+    }
+
+    getDamage() {
+        let dmgmin = this.getStrength() / 10;
+        let dmgmax = dmgmin * 2;
+        return dmgmin + Math.floor((dmgmax - dmgmin + 1)*ROT.RNG.getUniform());
     }
 }
