@@ -15,7 +15,8 @@
     },
     "scripts": {
         "webserver": "ws",
-        "build": "webpack"
+        "build": "webpack",
+        "watch": "npm-watch"
     },
     "dependencies": {
         "howler": "^2.0.7",
