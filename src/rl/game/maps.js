@@ -270,6 +270,16 @@ export class Map {
         }
         return true;
     }
+
+    killMonster(mob) {
+        for(var idx = 0; idx < this.mobs.length; ++idx ) { 
+            if ( mob === this.mobs[idx] ) {
+                this.drawTile( mob.location.x, mob.location.y, true );
+                this.mobs.splice(idx, 1);
+                break;
+            }
+        }
+    }
 }
 
 

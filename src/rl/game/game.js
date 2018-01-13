@@ -47,7 +47,7 @@ export const game = (function(root) {
         this.display.setOptions({fontSize: this.display.computeFontSize(size[0], size[1])});        
     }
 
-    function move(mob,dx,dy) {
+    function move(mob,dx,dy,isPlayer) {
         if ( gamestate.currentMap.isPassable( mob.location.x + dx, mob.location.y + dy)) {
             gamestate.currentMap.drawTile( mob.location.x, mob.location.y, true );
             mob.move(dx, dy);
@@ -63,6 +63,21 @@ export const game = (function(root) {
                         game.messages.addMessage("You picked up a " + generatedItem.name);
                     }
                 }
+            }
+        } else if ( !!isPlayer && gamestate.currentMap.hasMonster (mob.location.x + dx, mob.location.y + dy)) {
+            let monster = gamestate.currentMap.hasMonster (mob.location.x + dx, mob.location.y + dy);
+            let dmg = gamestate.me.attack(monster);
+            if ( dmg > 0 ) {
+                game.messages.addMessage(`You hit the ${monster.name}!`);
+                let res = monster.takeDamage(dmg);
+                if ( !res ) {
+                    game.messages.addMessage(`You have killed the ${monster.name}!`);
+                    gamestate.me.takeExperience(gamestate.currentMapLevel);
+                    gamestate.currentMap.killMonster(monster);
+                }
+            }
+            else {
+                game.messages.addMessage(`You miss the ${monster.name}!`);
             }
         }
     }
@@ -133,7 +148,7 @@ export const game = (function(root) {
         if (game.mode == 1 ) { 
             process_direction(-1, 0); 
         } else { 
-            move(gamestate.me,-1,0);
+            move(gamestate.me,-1,0,true);
         }
         process_world();        
     }
@@ -142,7 +157,7 @@ export const game = (function(root) {
         if (game.mode == 1 ) { 
             process_direction(1, 0); 
         } else {
-            move(gamestate.me,1,0);
+            move(gamestate.me,1,0, true);
         }
         process_world();
     }
@@ -152,7 +167,7 @@ export const game = (function(root) {
             process_direction(0, -1); 
         } 
         else {
-            move(gamestate.me,0,-1);
+            move(gamestate.me,0,-1, true);
         }
         process_world();
     }
@@ -161,7 +176,7 @@ export const game = (function(root) {
         if (game.mode == 1 ) { 
             process_direction(0, 1); 
         } else { 
-            move(gamestate.me,0,1);
+            move(gamestate.me,0,1, true);
         }
         process_world();
     }

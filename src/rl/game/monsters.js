@@ -41,7 +41,7 @@ export class Monster {
     }
 
     attack(othermob) {
-        let hitpercent = 50 + (this.strength - othermob.dexterity) * 0.5 - othermob.armor * 0.5;
+        let hitpercent = 50 + (this.getStrength() - othermob.getDexterity()) * 0.5 - othermob.getArmor() * 0.5;
         hitpercent /= 100;
 
         if ( ROT.RNG.getUniform() < hitpercent ) {
@@ -61,15 +61,27 @@ export class Monster {
         }
     }
 
+    getArmor() {
+        return this.armor;
+    }
+
+    getStrength() {
+        return this.strength;
+    }
+
+    getDexterity() {
+        return this.dexterity;
+    }
+
     getDamage() {
         return this.dmgmin + Math.floor((this.dmgmax - this.dmgmin + 1)*ROT.RNG.getUniform());
     }
 }
 
 export const monsters = [
-    new Monster("kobold", "k", "#207020", 0, 5, 10, 10, 0, 1, 2),
-    new Monster("goblin", "g", "#707020", 0, 5, 10, 10, 0, 1, 2),
-    new Monster("orc", "o", "#207020", 2, 5, 15, 10, 0, 1, 2),
+    new Monster("kobold", "k", "#207020", 0, 5, 10, 4, 0, 1, 2),
+    new Monster("goblin", "g", "#707020", 0, 5, 10, 8, 0, 1, 2),
+    new Monster("orc", "o", "#207020", 2, 5, 15, 15, 0, 1, 2),
     new Monster("Haskell", "H", "#ed9797", 2, 6, 35, 10, 0, 1, 2)
 ];
 
