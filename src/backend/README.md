@@ -1,10 +1,23 @@
 # Backend API
 
+## Game document
+
+    {
+        _id: 'uuid',
+        startTime: 0,
+        endTime: 0,
+        client: 'name',
+        character: '',
+        xp: 123,
+        gold: 999,
+        killer: ''
+    }
+
 ## Register game
 
     POST /games/
 
-Returns game id
+Returns game JSON including \_id
 
 ## List games
 
