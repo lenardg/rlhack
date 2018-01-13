@@ -10,6 +10,8 @@
 export class Monster {
     constructor(name, symbol, color, minlevel, maxlevel, hp, strength, armor) {
         this.name = name;
+        this.player = false;
+        
         this.symbol = symbol;
         this.color = color;
         this.minlevel = minlevel;

@@ -12,6 +12,7 @@ import { Monster } from "./monsters";
 export class Player extends Monster {
     constructor() {
         super("ME", "@", "#FFFFFF", 1, 999, 10, 0, 0 );
+        this.isPlayer = true;
 
         this.level = 1;
         this.xp = 0;
@@ -39,6 +40,14 @@ export class Player extends Monster {
 
     takeGold(gold) {
         this.gold += gold;
+        this.queueUpdate();
+    }
+
+    takeItem(item) {
+
+    }
+
+    queueUpdate() {
         if ( !!this.updated ) { 
             this.updated();
         }
