@@ -50,8 +50,11 @@ export const game = (function(root) {
             gamestate.currentMap.drawTile( mob.location.x, mob.location.y );
             mob.move(dx, dy);
             game.drawMonster(mob);
-            if (mob.isPlayer()) {
-                if (gamestate.currentMap.)
+            if ( !!mob.isPlayer) {
+                if ( !!gamestate.currentMap.getLocation( mob.location.x, mob.location.y ).item) {
+                    var item = gamestate.currentMap.pickUpItem( mob.location.x, mob.location.y );
+                    mob.addItemToInventory(item);
+                }
             }
         }
     }

@@ -47,6 +47,10 @@ export class Player extends Monster {
 
     }
 
+    addItemToInventory(item) {
+        
+    }
+
     queueUpdate() {
         if ( !!this.updated ) { 
             this.updated();
