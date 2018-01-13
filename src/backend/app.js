@@ -1,5 +1,7 @@
 const MongoClient = require("mongodb").MongoClient;
 const assert = require("assert");
+const bodyParser = require("body-parser");
+const express = require("express");
 
 // Connection URL
 console.log(process.env.PASSWD);
@@ -24,16 +26,22 @@ const accessDB = callback =>
     client.close();
   });
 
-const express = require("express");
 const app = express();
-
-app.get("/", (req, res) => res.send("Hello World!"));
-
+app.use(bodyParser.json());
 app.listen(3000, () => console.log("Example app listening on port 3000!"));
 
 app.post("/games", function(req, res) {
-  accessDB(collection => collection.insert({ test: "TESTI TEKSTI 2" }));
-  res.send("TOIMII!");
+  accessDB(collection => {
+    const input = req.body;
+    const startTime = new Date().getTime();
+    const doc = Object.assign({}, input, { startTime });
+    const output = Object.assign({}, doc);
+    collection.insert(doc, (err, docs) => {
+      const id = docs.insertedIds[0];
+      output.id = id;
+      res.send(output);
+    });
+  });
 });
 
 app.get("/games", function(req, res) {
