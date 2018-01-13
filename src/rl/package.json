@@ -12,5 +12,8 @@
     "scripts": {
         "webserver": "ws",
         "build": "webpack"
+    },
+    "dependencies": {
+        "howler": "^2.0.7"
     }
 }
