@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const app = express();
 const ObjectId = require("mongodb").ObjectId;
 app.use(bodyParser.urlencoded({ extended: false }));
+app.listen(3000, () => console.log("Example app listening on port 3000!"));
 
 // Connection URL
 const url =
