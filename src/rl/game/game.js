@@ -12,6 +12,7 @@ import { extend } from "./util";
 import { Player } from "./player";
 import { Messages } from "./messages";
 import { Map, TILES, ITEMS } from "./maps";
+import { MusicController } from "./music";
 
 export const game = (function(root) {
 
@@ -30,7 +31,8 @@ export const game = (function(root) {
         me: new Player(),
         currentMap: {left: 0, top: 0},
         currentMapLevel: 0,
-        levels: []
+        levels: [],
+        music: new MusicController()
     };
     
     function getWindowSize() {
@@ -73,6 +75,10 @@ export const game = (function(root) {
     function move_down() {
         if (game.mode == 1 ) { process_direction(0, 1); return; } 
         move(gamestate.me,0,1);
+    }
+
+    function cmd_toggleMusic() {
+        gamestate.music.toggleMusic();
     }
 
     function cmd_open() {
@@ -119,17 +125,25 @@ export const game = (function(root) {
 
     function splash() {
         game.display.clear();        
-        game.display.drawText(0,0, "we are loading, please stand by ....");
-        game.display.drawText(20,10, "%c{#444444}#%c{#5B0180}          _  _                   _    ");
-        game.display.drawText(20,11, "%c{#444444}#%c{#5B0180}         | || |                 | |   ");
-        game.display.drawText(20,12, "%c{#5B4100}+%c{#5B0180}    _ __ | || |__    __ _   ___ | | __");
-        game.display.drawText(20,13, "%c{#444444}#%c{#5B0180}   | '__|| || '_ \\  / _` | / __|| |/ /");
-        game.display.drawText(20,14, "%c{#444444}#%c{#5B0180}   | |   | || | | || (_| || (__ |   < ");
-        game.display.drawText(20,15, "%c{#444444}#%c{#5B0180}   |_|   |_||_| |_| \\__,_| \\___||_|\\_\\");
-    
-        game.drawMonster(gamestate.me);
-    }
+        game.display.drawText(4,0, "we are loading, please stand by ....");
+        game.display.drawText(4,9,  "%c{#5B0180}██████╗ ██╗   ██╗███╗   ██╗ ██████╗ ███████╗ ██████╗ ███╗   ██╗███████╗     ██████╗ ███████╗");
+        game.display.drawText(4,10, "%c{#5B0180}██╔══██╗██║   ██║████╗  ██║██╔════╝ ██╔════╝██╔═══██╗████╗  ██║██╔════╝    ██╔═══██╗██╔════╝");
+        game.display.drawText(4,11, "%c{#5B0180}██║  ██║██║   ██║██╔██╗ ██║██║  ███╗█████╗  ██║   ██║██╔██╗ ██║███████╗    ██║   ██║█████╗  ");
+        game.display.drawText(4,12, "%c{#5B0180}██║  ██║██║   ██║██║╚██╗██║██║   ██║██╔══╝  ██║   ██║██║╚██╗██║╚════██║    ██║   ██║██╔══╝  ");
+        game.display.drawText(4,13, "%c{#5B0180}██████╔╝╚██████╔╝██║ ╚████║╚██████╔╝███████╗╚██████╔╝██║ ╚████║███████║    ╚██████╔╝██║     ");    
+        game.display.drawText(4,14, "%c{#5B0180}╚═════╝  ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝     ╚═════╝ ╚═╝     ");    
+        game.display.drawText(4,15, "%c{#5B0180}██████╗ ███████╗██╗   ██╗██╗███████╗██╗ ██████╗  ██████╗ ███╗   ██╗ █████╗                  ");    
+        game.display.drawText(4,16, "%c{#5B0180}██╔══██╗██╔════╝██║   ██║██║██╔════╝██║██╔═══██╗██╔═══██╗████╗  ██║██╔══██╗                 ");    
+        game.display.drawText(4,17, "%c{#5B0180}██║  ██║█████╗  ██║   ██║██║███████╗██║██║   ██║██║   ██║██╔██╗ ██║███████║                 ");    
+        game.display.drawText(4,18, "%c{#5B0180}██║  ██║██╔══╝  ╚██╗ ██╔╝██║╚════██║██║██║   ██║██║   ██║██║╚██╗██║██╔══██║                 ");    
+        game.display.drawText(4,19, "%c{#5B0180}██████╔╝███████╗ ╚████╔╝ ██║███████║██║╚██████╔╝╚██████╔╝██║ ╚████║██║  ██║                 ");    
+        game.display.drawText(4,20, "%c{#5B0180}╚═════╝ ╚══════╝  ╚═══╝  ╚═╝╚══════╝╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝                 ");    
 
+        gamestate.music.prepareMusic("town", "town_ambience_1");
+        gamestate.music.prepareMusic("dungeon", "cave_4");
+        gamestate.music.play("town");
+    }
+    
     var game = {
         display: null,
         waitCallback: null,
@@ -157,8 +171,11 @@ export const game = (function(root) {
                 // commands
                 keybinding(ROT.VK_O, cmd_open);
                 keybinding(ROT.VK_C, cmd_close);
+
                 keybinding(ROT.VK_U, level_up);
                 keybinding(ROT.VK_J, level_down);
+                
+                keybinding(ROT.VK_M, cmd_toggleMusic);
             }
 
             // pass in options to the constructor to change the default 80x25 size
@@ -186,8 +203,9 @@ export const game = (function(root) {
 
             root.setTimeout(function() {
                 game.initLevel(0);
+                gamestate.music.play("dungeon");
                 game.drawMonster(gamestate.me);
-            }, 1000);
+            }, 5000);
         },
 
 
