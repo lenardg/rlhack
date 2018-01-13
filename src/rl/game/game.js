@@ -28,7 +28,9 @@ export const game = (function(root) {
 
     var gamestate = {
         me: new Player(),
-        currentMap: {left: 0, top: 0}   
+        currentMap: {left: 0, top: 0},
+        currentMapLevel: 0,
+        levels: []
     };
 
     function getWindowSize() {
@@ -103,6 +105,18 @@ export const game = (function(root) {
         });        
     }
 
+    function level_up() {
+        if(gamestate.currentMapLevel > 0) {
+            game.initLevel(gamestate.currentMapLevel-1);
+            game.drawMonster(gamestate.me);
+        }
+    }
+
+    function level_down() {
+        game.initLevel(gamestate.currentMapLevel+1);
+        game.drawMonster(gamestate.me);
+    }
+
     function splash() {
         game.display.clear();        
         game.display.drawText(0,0, "we are loading, please stand by ....");
@@ -143,6 +157,8 @@ export const game = (function(root) {
                 // commands
                 keybinding(ROT.VK_O, cmd_open);
                 keybinding(ROT.VK_C, cmd_close);
+                keybinding(ROT.VK_U, level_up);
+                keybinding(ROT.VK_J, level_down);
             }
 
             // pass in options to the constructor to change the default 80x25 size
@@ -156,7 +172,7 @@ export const game = (function(root) {
             // calculate the maximum font size to achieve the desired size (80x25 characters)
             var size = getWindowSize();
             this.display.setOptions({fontSize: this.display.computeFontSize(size[0] - 10, size[1] - 10)});
-            root.addEventListener("resize", onResize.bind(this) )
+            root.addEventListener("resize", onResize.bind(this) );
 
             // create rot container
             document.body.appendChild(this.display.getContainer());
@@ -166,10 +182,10 @@ export const game = (function(root) {
             keyboard.init();
 
             // show the splashscreen
-            splash()
+            splash();
 
             root.setTimeout(function() {
-                game.initLevel(1);
+                game.initLevel(0);
                 game.drawMonster(gamestate.me);
             }, 1000);
         },
@@ -181,13 +197,23 @@ export const game = (function(root) {
             var generator = new ROT.Map.Digger(opts.mapWidth, opts.mapHeight, {
                 dugPercentage: 0.4
             });
-            gamestate.currentMap = new Map(opts.mapWidth, opts.mapHeight, generator);
+            gamestate.currentMapLevel = level;
 
+            if(level >= gamestate.levels.length) {
+                //new level
+                gamestate.currentMap = new Map(opts.mapWidth, opts.mapHeight, generator);
+                gamestate.levels.push(gamestate.currentMap);
+            } else {
+                //previously generated level
+                gamestate.currentMap = gamestate.levels[gamestate.currentMapLevel];
+            }
+
+            
             gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
             gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
             gamestate.currentMap.show();
 
-            game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level 1");
+            game.display.drawText(0,0, "%c{#FFFFFF}Dungeon, level %s".format(level+1));
             game.display.drawText(0,2, "%c{#888888}Players stats here");
             game.display.drawText(0,opts.statusHeight - 3, "%c{#5B0080}DevisioonΔ");
             game.display.drawText(0,opts.statusHeight - 2, "%c{#5B0080}roguelike hackathon");
@@ -206,7 +232,7 @@ export const game = (function(root) {
             this.waitCallback = callback;
             this.mode = 1;
         }
-    }
+    };
 
     return game;
 })(window);

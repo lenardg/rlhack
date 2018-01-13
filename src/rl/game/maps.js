@@ -99,8 +99,8 @@ export class Map {
                          this.isWall(x-1, y+1) && 
                          this.isWall(x, y+1) && 
                          this.isWall(x+1, y+1)) {
-                             this.setTile(x,y,TILES.DeepWall);
-                         }
+                        this.setTile(x,y,TILES.DeepWall);
+                    }
                 }
             }
         }
@@ -144,7 +144,7 @@ export class Map {
 
     drawTile(x,y) {
         var tile = this.getTile(x,y);
-        var color = "#FFFFFF"
+        var color = "#FFFFFF";
         if ( !!TILE_COLOR[tile]) {
             color = TILE_COLOR[tile];
         }
