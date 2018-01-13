@@ -179,13 +179,30 @@ export const game = (function(root) {
     function randomApply(action, probability) {
         for (let x = 0; x < gamestate.currentMap.width; x++) {
             for (let y = 0; y < gamestate.currentMap.height; y++) {
-                if (Math.random() > 0.93) {
+                if (Math.random() > probability) {
                     if (gamestate.currentMap.isFreeTile(x, y)) {
                         action(x, y);
                     }
                 }
             }
         }
+    }
+
+    function randomApplySingle(action) {
+        const coordinates = [];
+        
+        for (let x = 0; x < gamestate.currentMap.width; x++) {
+            for (let y = 0; y < gamestate.currentMap.height; y++) {
+                if (gamestate.currentMap.isFreeTile(x, y)) {
+                    coordinates.push({x:x,y:y});
+                }
+            }
+        }
+
+        const randomIndex = Math.floor(Math.random() * coordinates.length - 1);
+        const target = coordinates[randomIndex];
+
+        action(target.x, target.y);
     }
 
     const sendEndGameRequest = (killer) => {
@@ -335,6 +352,10 @@ export const game = (function(root) {
                     () => { this.nextLevel(); },
                     reason => { this.killPlayer(reason); },
                     generator);
+
+                randomApplySingle((x, y) => {
+                    gamestate.currentMap.addTile(x, y, TILES.Teleport);
+                });
             }
             gamestate.currentMap.setup(opts.statusWidth, opts.messagesHeight, this.display);
             gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
@@ -342,11 +363,11 @@ export const game = (function(root) {
             // for test purposes
             randomApply((x, y) => {
                 gamestate.currentMap.addItem(x, y, ITEMS.Gold.key);
-            });
+            }, 0.93);
 
             randomApply((x, y) => {
                 gamestate.currentMap.addTile(x, y, TILES.Well);
-            });
+            }, 0.98);
 
             this.display.clear();
             this.draw();

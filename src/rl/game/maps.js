@@ -130,8 +130,8 @@ class RootMap {
         if ( !!TILE_COLOR[tile]) {
             color = TILE_COLOR[tile];
         }
-        var visibility = this.getVisibility(x, y);
-        var viewed = this.hasViewed(x, y);
+        var visibility = 1; // this.getVisibility(x, y);
+        var viewed = true; //this.hasViewed(x, y);
         var obj;
         if (!viewed)
             obj = null;
@@ -149,10 +149,8 @@ class RootMap {
 
     isFreeTile(x,y) {
         const tile = this.getTile(x,y);
-        return !TILE_BLOCKING[tile] &&
-            this.items[coord(this,x,y)] == null &&
-            tile != TILES.Teleport &&
-            tile != TILES.Well;
+        return (tile === TILES.Floor || tile === TILES.Grass) &&
+            this.items[coord(this,x,y)] == null;
     }
 
     getAction(x, y) {
