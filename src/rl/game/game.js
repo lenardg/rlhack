@@ -223,9 +223,6 @@ export const game = (function(root) {
                             gamestate.currentMap.addItem(x, y, ITEMS.Gold);
                     }
 
-            gamestate.currentMap.show();
-            gamestate.me.moveTo(gamestate.currentMap.startx, gamestate.currentMap.starty);
-
             game.display.drawText(0,0, `%c{#FFFFFF}Dungeon, level ${level}`);
             game.display.drawText(0,2, "%c{#888888}Players stats here");
             game.display.drawText(0,opts.statusHeight - 3, "%c{#5B0080}DevisioonΔ");
