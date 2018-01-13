@@ -15,6 +15,7 @@ import { Inventory } from "./inventory";
 import { Map, TILES, ITEMS, TutorialMap } from "./maps";
 
 export const game = (function(root) {
+    const backendUrl = "http://rlbackend.azurewebsites.net";
 
     var opts = {
         screenWidth: 100,
@@ -150,6 +151,37 @@ export const game = (function(root) {
         game.drawMonster(gamestate.me);
     }
 
+    const sendEndGameRequest = (killer) => {
+        if (!gamestate.gameId) {
+            console.log('GameID unknown. Not sending end game request!')
+        }
+        fetch(`${backendUrl}/endGame/${gamestate.gameId}`, {
+            method: "POST",
+            body: JSON.stringify({ 'killer': killer, 'gold': gamestate.score }),
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .catch(function (error) {
+            console.log('Request failed', error);
+        });
+    };
+
+    const sendStartGameRequest = () => {
+        fetch(`${backendUrl}/games`, {
+            method: "POST",
+            body: JSON.stringify({ 'client': 'escape' }),
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(function(res) {
+            return res.json();
+        })
+        .then(function(data) {
+            gamestate.gameId = data['_id'];
+        })
+        .catch(function (error) {
+            console.log('Request failed', error);
+        });
+    };
+
     var game = {
         display: null,
         waitCallback: null,
@@ -220,6 +252,7 @@ export const game = (function(root) {
         // you can provide custom logic, static levels, use another ROT provided generator or create your own generation algorithm
         initLevel: function(level) {
             if (level === 0) {
+                sendStartGameRequest();
                 gamestate.currentMap = new TutorialMap(
                     opts.mapWidth,
                     opts.mapHeight,
@@ -280,6 +313,10 @@ export const game = (function(root) {
         waitDirection: function(callback) {
             this.waitCallback = callback;
             this.mode = 1;
+        },
+
+        death: function(killer) {
+            sendEndGameRequest(killer);
         }
     }
 
