@@ -42,7 +42,6 @@ app.post("/games", function(req, res) {
 });
 
 app.get("/games", function(req, res) {
-  console.log("games");
   accessDB(collection => {
     collection.find().toArray((err, result) => {
       if (err) console.log(err);
@@ -53,12 +52,14 @@ app.get("/games", function(req, res) {
 
 app.post("/endGame/:id", function(req, res) {
   const gameId = req.params.id;
-  console.log(gameId);
+  const body = req.body;
+  body.endTime = new Date().getTime();
   accessDB(collection => {
-    const resp = collection
-      .findOne({ _id: ObjectId(gameId) })
-      .then(response => console.log(response, "resolvas"))
-      .catch(err => console.log(err));
-    res.send(resp);
+    collection
+      .findOneAndUpdate({ _id: ObjectId(gameId) }, { $set: body })
+      .then(response => {
+        res.send(response);
+      })
+      .catch(err => res.send(err));
   });
 });
